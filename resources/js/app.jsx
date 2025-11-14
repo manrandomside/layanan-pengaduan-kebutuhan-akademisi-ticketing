@@ -2,13 +2,14 @@ import "./bootstrap";
 import "../css/app.css";
 import React from "react";
 import { createRoot } from "react-dom/client";
+import { AuthProvider } from "./contexts/AuthContext";
+import Router from "./Router";
 
 function App() {
     return (
-        <div className="container mt-5">
-            <h1>Laravel + React Setup Complete</h1>
-            <p>Ticketing System UPT LAB</p>
-        </div>
+        <AuthProvider>
+            <Router />
+        </AuthProvider>
     );
 }
 
