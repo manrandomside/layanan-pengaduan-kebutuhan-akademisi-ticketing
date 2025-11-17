@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../../components/admin/Navbar";
+import Navbar from "../../Components/admin/Navbar";
 import axiosInstance from "../../config/axios";
 
 const KelolaPengguna = () => {
