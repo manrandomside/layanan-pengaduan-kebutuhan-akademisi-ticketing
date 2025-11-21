@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import Navbar from "../../components/user/Navbar";
+import Navbar from "../../Components/user/Navbar";
 import axiosInstance from "../../config/axios";
 
 const ComplaintForm = () => {
@@ -29,7 +29,7 @@ const ComplaintForm = () => {
     const fetchTicketBalance = async () => {
         try {
             const response = await axiosInstance.get("/user/tickets/balance");
-            setTicketBalance(response.data.total_tickets || 0);
+            setTicketBalance(response.data.data?.total_tickets || 0);
         } catch (error) {
             console.error("Error fetching ticket balance:", error);
         }
@@ -38,7 +38,7 @@ const ComplaintForm = () => {
     const fetchAvailableTickets = async () => {
         try {
             const response = await axiosInstance.get("/user/tickets/balance");
-            const tickets = response.data.available_tickets || [];
+            const tickets = response.data.data?.available_tickets || [];
             setAvailableTickets(tickets);
         } catch (error) {
             console.error("Error fetching available tickets:", error);
@@ -113,7 +113,7 @@ const ComplaintForm = () => {
                 <div className="mb-8">
                     <button
                         onClick={() => navigate("/dashboard")}
-                        className="flex items-center text-gray-600 hover:text-green-600 mb-4"
+                        className="flex items-center text-gray-600 hover:text-primary-700 mb-4"
                     >
                         <svg
                             className="w-5 h-5 mr-2"
@@ -155,12 +155,12 @@ const ComplaintForm = () => {
                 )}
 
                 <div className="bg-white rounded-xl shadow-md p-6 md:p-8">
-                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex justify-between items-center">
+                    <div className="mb-6 p-4 bg-primary-50 border border-primary-200 rounded-lg flex justify-between items-center">
                         <div>
                             <p className="text-sm text-gray-600">
                                 Tiket Tersedia
                             </p>
-                            <p className="text-2xl font-bold text-green-600">
+                            <p className="text-2xl font-bold text-primary-700">
                                 {ticketBalance}
                             </p>
                         </div>
@@ -259,7 +259,7 @@ const ComplaintForm = () => {
                                         name="kelas"
                                         value={formData.kelas}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                         placeholder="Contoh: IF-2A"
                                         disabled={loading}
                                     />
@@ -281,7 +281,7 @@ const ComplaintForm = () => {
                                         name="lab"
                                         value={formData.lab}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                         placeholder="Contoh: Lab Komputer 1"
                                         disabled={loading}
                                     />
@@ -303,7 +303,7 @@ const ComplaintForm = () => {
                                         name="ruangan"
                                         value={formData.ruangan}
                                         onChange={handleChange}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                         placeholder="Contoh: R.101"
                                         disabled={loading}
                                     />
@@ -327,7 +327,7 @@ const ComplaintForm = () => {
                                         errors.priority
                                             ? "border-red-500"
                                             : "border-gray-300"
-                                    } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white`}
+                                    } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white`}
                                     disabled={loading}
                                 >
                                     <option value="">Pilih Priority</option>
@@ -366,7 +366,7 @@ const ComplaintForm = () => {
                                         errors.keluhan
                                             ? "border-red-500"
                                             : "border-gray-300"
-                                    } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
+                                    } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent`}
                                     placeholder="Jelaskan keluhan Anda secara detail..."
                                     disabled={loading}
                                 />
@@ -390,8 +390,7 @@ const ComplaintForm = () => {
                             <button
                                 type="submit"
                                 disabled={loading || ticketBalance <= 0}
-                                className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                                style={{ backgroundColor: "#439454" }}
+                                className="flex-1 bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? "Mengirim..." : "Kirim Keluhan"}
                             </button>

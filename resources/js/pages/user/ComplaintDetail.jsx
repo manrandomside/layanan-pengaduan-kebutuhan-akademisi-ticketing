@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Navbar from "../../components/user/Navbar";
+import Navbar from "../../Components/user/Navbar";
 import axiosInstance from "../../config/axios";
 
 const ComplaintDetail = () => {
@@ -30,7 +30,7 @@ const ComplaintDetail = () => {
         const badges = {
             waiting: "bg-yellow-100 text-yellow-800 border-yellow-200",
             on_progress: "bg-blue-100 text-blue-800 border-blue-200",
-            done: "bg-green-100 text-green-800 border-green-200",
+            done: "bg-primary-100 text-primary-800 border-primary-200",
         };
         return badges[status] || "bg-gray-100 text-gray-800 border-gray-200";
     };
@@ -67,7 +67,7 @@ const ComplaintDetail = () => {
             <div className="min-h-screen bg-gray-50">
                 <Navbar />
                 <div className="flex justify-center items-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700"></div>
                 </div>
             </div>
         );
@@ -94,7 +94,7 @@ const ComplaintDetail = () => {
                 <div className="mb-8">
                     <button
                         onClick={() => navigate("/keluhan/list")}
-                        className="flex items-center text-gray-600 hover:text-green-600 mb-4"
+                        className="flex items-center text-gray-600 hover:text-primary-700 mb-4"
                     >
                         <svg
                             className="w-5 h-5 mr-2"
@@ -268,11 +268,11 @@ const ComplaintDetail = () => {
                                 {complaint.responses.map((response, index) => (
                                     <div
                                         key={index}
-                                        className="bg-green-50 rounded-lg p-4 border border-green-200"
+                                        className="bg-primary-50 rounded-lg p-4 border border-primary-200"
                                     >
                                         <div className="flex items-center gap-2 mb-2">
                                             <svg
-                                                className="w-5 h-5 text-green-600"
+                                                className="w-5 h-5 text-primary-700"
                                                 fill="none"
                                                 stroke="currentColor"
                                                 viewBox="0 0 24 24"
@@ -284,10 +284,10 @@ const ComplaintDetail = () => {
                                                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                                                 />
                                             </svg>
-                                            <span className="font-semibold text-green-800">
+                                            <span className="font-semibold text-primary-800">
                                                 Admin
                                             </span>
-                                            <span className="text-xs text-green-600">
+                                            <span className="text-xs text-primary-600">
                                                 {new Date(
                                                     response.created_at
                                                 ).toLocaleDateString("id-ID", {
@@ -318,8 +318,7 @@ const ComplaintDetail = () => {
                                             `/feedback/${complaint.complaint_id}`
                                         )
                                     }
-                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-lg transition duration-200 shadow-lg hover:shadow-xl"
-                                    style={{ backgroundColor: "#439454" }}
+                                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold rounded-lg transition duration-200 shadow-lg hover:shadow-xl"
                                 >
                                     <svg
                                         className="w-5 h-5"

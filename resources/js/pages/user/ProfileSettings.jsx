@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import Navbar from "../../components/user/Navbar";
+import Navbar from "../../Components/user/Navbar";
 import axiosInstance from "../../config/axios";
 
 const ProfileSettings = () => {
@@ -252,7 +252,7 @@ const ProfileSettings = () => {
                 <div className="mb-8">
                     <button
                         onClick={() => navigate("/dashboard")}
-                        className="flex items-center text-gray-600 hover:text-green-600 mb-4"
+                        className="flex items-center text-gray-600 hover:text-primary-700 mb-4"
                     >
                         <svg
                             className="w-5 h-5 mr-2"
@@ -283,7 +283,7 @@ const ProfileSettings = () => {
                             onClick={() => setActiveTab("profile")}
                             className={`flex-1 px-6 py-4 text-sm font-medium transition duration-200 ${
                                 activeTab === "profile"
-                                    ? "text-green-600 border-b-2 border-green-600"
+                                    ? "text-primary-700 border-b-2 border-primary-700"
                                     : "text-gray-600 hover:text-gray-800"
                             }`}
                         >
@@ -293,7 +293,7 @@ const ProfileSettings = () => {
                             onClick={() => setActiveTab("email-phone")}
                             className={`flex-1 px-6 py-4 text-sm font-medium transition duration-200 ${
                                 activeTab === "email-phone"
-                                    ? "text-green-600 border-b-2 border-green-600"
+                                    ? "text-primary-700 border-b-2 border-primary-700"
                                     : "text-gray-600 hover:text-gray-800"
                             }`}
                         >
@@ -303,7 +303,7 @@ const ProfileSettings = () => {
                             onClick={() => setActiveTab("password")}
                             className={`flex-1 px-6 py-4 text-sm font-medium transition duration-200 ${
                                 activeTab === "password"
-                                    ? "text-green-600 border-b-2 border-green-600"
+                                    ? "text-primary-700 border-b-2 border-primary-700"
                                     : "text-gray-600 hover:text-gray-800"
                             }`}
                         >
@@ -325,7 +325,7 @@ const ProfileSettings = () => {
                                 <div
                                     className={`mb-6 p-4 rounded-lg ${
                                         profileMessage.type === "success"
-                                            ? "bg-green-50 border border-green-200 text-green-600"
+                                            ? "bg-primary-50 border border-primary-200 text-primary-700"
                                             : "bg-red-50 border border-red-200 text-red-600"
                                     }`}
                                 >
@@ -350,7 +350,7 @@ const ProfileSettings = () => {
                                                 nama_lengkap: e.target.value,
                                             })
                                         }
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                         disabled={profileLoading}
                                     />
                                 </div>
@@ -368,7 +368,7 @@ const ProfileSettings = () => {
                                                 nim_nip: e.target.value,
                                             })
                                         }
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                         disabled={profileLoading}
                                     />
                                 </div>
@@ -385,7 +385,7 @@ const ProfileSettings = () => {
                                                 status: e.target.value,
                                             })
                                         }
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
                                         disabled={profileLoading}
                                     >
                                         <option value="dosen">Dosen</option>
@@ -400,8 +400,7 @@ const ProfileSettings = () => {
                                 <button
                                     type="submit"
                                     disabled={profileLoading}
-                                    className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                                    style={{ backgroundColor: "#439454" }}
+                                    className="w-full bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {profileLoading
                                         ? "Menyimpan..."
@@ -427,7 +426,7 @@ const ProfileSettings = () => {
                                 <div
                                     className={`mb-6 p-4 rounded-lg ${
                                         emailPhoneMessage.type === "success"
-                                            ? "bg-green-50 border border-green-200 text-green-600"
+                                            ? "bg-primary-50 border border-primary-200 text-primary-700"
                                             : "bg-red-50 border border-red-200 text-red-600"
                                     }`}
                                 >
@@ -452,7 +451,7 @@ const ProfileSettings = () => {
                                                             e.target.value,
                                                     })
                                                 }
-                                                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                                 placeholder="email@baru.com"
                                                 disabled={emailPhoneLoading}
                                             />
@@ -462,7 +461,7 @@ const ProfileSettings = () => {
                                                     emailPhoneLoading ||
                                                     !emailPhoneData.new_email
                                                 }
-                                                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                className="px-6 py-3 bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                             >
                                                 {emailPhoneLoading
                                                     ? "Loading..."
@@ -491,7 +490,7 @@ const ProfileSettings = () => {
                                                                 e.target.value,
                                                         })
                                                     }
-                                                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                                    className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                                     placeholder="08xxxxxxxxxx"
                                                     disabled={emailPhoneLoading}
                                                 />
@@ -501,7 +500,7 @@ const ProfileSettings = () => {
                                                         emailPhoneLoading ||
                                                         !emailPhoneData.new_no_telepon
                                                     }
-                                                    className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    className="px-6 py-3 bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
                                                     {emailPhoneLoading
                                                         ? "Loading..."
@@ -532,7 +531,7 @@ const ProfileSettings = () => {
                                                         e.target.value,
                                                 })
                                             }
-                                            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                             placeholder="Masukkan token"
                                             disabled={emailPhoneLoading}
                                         />
@@ -542,7 +541,7 @@ const ProfileSettings = () => {
                                                 emailPhoneLoading ||
                                                 !emailPhoneData.verification_token
                                             }
-                                            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="px-6 py-3 bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             {emailPhoneLoading
                                                 ? "Verifying..."
@@ -584,7 +583,7 @@ const ProfileSettings = () => {
                                                         e.target.value,
                                                 })
                                             }
-                                            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                             placeholder="Masukkan token"
                                             disabled={emailPhoneLoading}
                                         />
@@ -594,7 +593,7 @@ const ProfileSettings = () => {
                                                 emailPhoneLoading ||
                                                 !emailPhoneData.verification_token
                                             }
-                                            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="px-6 py-3 bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             {emailPhoneLoading
                                                 ? "Verifying..."
@@ -631,7 +630,7 @@ const ProfileSettings = () => {
                                 <div
                                     className={`mb-6 p-4 rounded-lg ${
                                         passwordMessage.type === "success"
-                                            ? "bg-green-50 border border-green-200 text-green-600"
+                                            ? "bg-primary-50 border border-primary-200 text-primary-700"
                                             : "bg-red-50 border border-red-200 text-red-600"
                                     }`}
                                 >
@@ -664,7 +663,7 @@ const ProfileSettings = () => {
                                                         e.target.value,
                                                 })
                                             }
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                             disabled={passwordLoading}
                                         />
                                         <button
@@ -723,7 +722,7 @@ const ProfileSettings = () => {
                                                         e.target.value,
                                                 })
                                             }
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                             placeholder="Minimal 8 karakter"
                                             disabled={passwordLoading}
                                         />
@@ -784,7 +783,7 @@ const ProfileSettings = () => {
                                                         e.target.value,
                                                 })
                                             }
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                             placeholder="Ketik ulang password baru"
                                             disabled={passwordLoading}
                                         />
@@ -828,8 +827,7 @@ const ProfileSettings = () => {
                                 <button
                                     type="submit"
                                     disabled={passwordLoading}
-                                    className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                                    style={{ backgroundColor: "#439454" }}
+                                    className="w-full bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {passwordLoading
                                         ? "Mengubah..."

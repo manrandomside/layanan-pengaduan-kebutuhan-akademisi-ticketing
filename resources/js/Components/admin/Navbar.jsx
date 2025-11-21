@@ -86,7 +86,7 @@ const Navbar = () => {
                             to="/admin/dashboard"
                             className="flex items-center"
                         >
-                            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                            <div className="w-10 h-10 bg-gradient-to-br from-primary-700 to-primary-800 rounded-lg flex items-center justify-center">
                                 <span className="text-white font-bold text-xl">
                                     UPT
                                 </span>
@@ -103,8 +103,8 @@ const Navbar = () => {
                             to="/admin/kelola-keluhan"
                             className={`px-4 py-2 rounded-lg font-medium transition duration-200 ${
                                 isActivePath("/admin/kelola-keluhan")
-                                    ? "bg-green-50 text-green-600"
-                                    : "text-gray-600 hover:text-green-600 hover:bg-green-50"
+                                    ? "bg-primary-50 text-primary-700"
+                                    : "text-gray-600 hover:text-primary-700 hover:bg-primary-50"
                             }`}
                         >
                             Kelola Keluhan
@@ -113,8 +113,8 @@ const Navbar = () => {
                             to="/admin/kelola-pengguna"
                             className={`px-4 py-2 rounded-lg font-medium transition duration-200 ${
                                 isActivePath("/admin/kelola-pengguna")
-                                    ? "bg-green-50 text-green-600"
-                                    : "text-gray-600 hover:text-green-600 hover:bg-green-50"
+                                    ? "bg-primary-50 text-primary-700"
+                                    : "text-gray-600 hover:text-primary-700 hover:bg-primary-50"
                             }`}
                         >
                             Kelola Pengguna
@@ -123,8 +123,8 @@ const Navbar = () => {
                             to="/admin/analisis-layanan"
                             className={`px-4 py-2 rounded-lg font-medium transition duration-200 ${
                                 isActivePath("/admin/analisis-layanan")
-                                    ? "bg-green-50 text-green-600"
-                                    : "text-gray-600 hover:text-green-600 hover:bg-green-50"
+                                    ? "bg-primary-50 text-primary-700"
+                                    : "text-gray-600 hover:text-primary-700 hover:bg-primary-50"
                             }`}
                         >
                             Analisis Layanan
@@ -141,7 +141,7 @@ const Navbar = () => {
                                         !showNotificationDropdown
                                     )
                                 }
-                                className="relative p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition duration-200"
+                                className="relative p-2 text-gray-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition duration-200"
                             >
                                 <svg
                                     className="w-6 h-6"
@@ -186,7 +186,7 @@ const Navbar = () => {
                                                 }
                                                 className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition duration-200 border-b border-gray-100 ${
                                                     notif.is_read === "unread"
-                                                        ? "bg-green-50"
+                                                        ? "bg-primary-50"
                                                         : ""
                                                 }`}
                                             >
@@ -216,9 +216,9 @@ const Navbar = () => {
                                 onClick={() =>
                                     setShowProfileDropdown(!showProfileDropdown)
                                 }
-                                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-green-50 transition duration-200"
+                                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-primary-50 transition duration-200"
                             >
-                                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                                <div className="w-8 h-8 bg-gradient-to-br from-primary-700 to-primary-800 rounded-full flex items-center justify-center">
                                     <svg
                                         className="w-5 h-5 text-white"
                                         fill="none"
@@ -256,7 +256,7 @@ const Navbar = () => {
                                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2">
                                     <Link
                                         to="/admin/profile"
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition duration-200"
+                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-700 transition duration-200"
                                         onClick={() =>
                                             setShowProfileDropdown(false)
                                         }
@@ -283,7 +283,7 @@ const Navbar = () => {
                         to="/admin/dashboard"
                         className={`flex flex-col items-center py-2 px-3 rounded-lg ${
                             isActivePath("/admin/dashboard")
-                                ? "text-green-600 bg-green-50"
+                                ? "text-primary-700 bg-primary-50"
                                 : "text-gray-600"
                         }`}
                     >
@@ -306,7 +306,7 @@ const Navbar = () => {
                         to="/admin/kelola-keluhan"
                         className={`flex flex-col items-center py-2 px-3 rounded-lg ${
                             isActivePath("/admin/kelola-keluhan")
-                                ? "text-green-600 bg-green-50"
+                                ? "text-primary-700 bg-primary-50"
                                 : "text-gray-600"
                         }`}
                     >
@@ -329,7 +329,7 @@ const Navbar = () => {
                         to="/admin/kelola-pengguna"
                         className={`flex flex-col items-center py-2 px-3 rounded-lg ${
                             isActivePath("/admin/kelola-pengguna")
-                                ? "text-green-600 bg-green-50"
+                                ? "text-primary-700 bg-primary-50"
                                 : "text-gray-600"
                         }`}
                     >
@@ -352,7 +352,7 @@ const Navbar = () => {
                         to="/admin/analisis-layanan"
                         className={`flex flex-col items-center py-2 px-3 rounded-lg ${
                             isActivePath("/admin/analisis-layanan")
-                                ? "text-green-600 bg-green-50"
+                                ? "text-primary-700 bg-primary-50"
                                 : "text-gray-600"
                         }`}
                     >

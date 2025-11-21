@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Navbar from "../../components/user/Navbar";
+import Navbar from "../../Components/user/Navbar";
 import axiosInstance from "../../config/axios";
 
 const FeedbackForm = () => {
@@ -77,7 +77,7 @@ const FeedbackForm = () => {
             <div className="min-h-screen bg-gray-50">
                 <Navbar />
                 <div className="flex justify-center items-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700"></div>
                 </div>
             </div>
         );
@@ -91,7 +91,7 @@ const FeedbackForm = () => {
                 <div className="mb-8">
                     <button
                         onClick={() => navigate(`/keluhan/${complaintId}`)}
-                        className="flex items-center text-gray-600 hover:text-green-600 mb-4"
+                        className="flex items-center text-gray-600 hover:text-primary-700 mb-4"
                     >
                         <svg
                             className="w-5 h-5 mr-2"
@@ -128,9 +128,9 @@ const FeedbackForm = () => {
                     {complaint && (
                         <div className="mb-8 pb-8 border-b border-gray-200">
                             <div className="flex items-start gap-4">
-                                <div className="p-3 bg-green-100 rounded-lg">
+                                <div className="p-3 bg-primary-100 rounded-lg">
                                     <svg
-                                        className="w-6 h-6 text-green-600"
+                                        className="w-6 h-6 text-primary-700"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -180,7 +180,7 @@ const FeedbackForm = () => {
                                         <svg
                                             className={`w-12 h-12 sm:w-16 sm:h-16 ${
                                                 star <= (hoverRating || rating)
-                                                    ? "text-yellow-400 fill-current"
+                                                    ? "text-accent-300 fill-current"
                                                     : "text-gray-300"
                                             }`}
                                             fill={
@@ -205,7 +205,7 @@ const FeedbackForm = () => {
                                 {rating > 0 && (
                                     <p className="text-gray-600 text-sm mt-2">
                                         Anda memberikan rating{" "}
-                                        <span className="font-bold text-green-600">
+                                        <span className="font-bold text-primary-700">
                                             {rating} dari 5 bintang
                                         </span>
                                     </p>
@@ -236,7 +236,7 @@ const FeedbackForm = () => {
                                     setFeedbackText(e.target.value)
                                 }
                                 rows="6"
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                 placeholder="Bagikan pengalaman Anda dengan layanan kami... Apa yang berjalan dengan baik? Apa yang bisa ditingkatkan?"
                                 disabled={submitting}
                             />
@@ -261,8 +261,7 @@ const FeedbackForm = () => {
                             <button
                                 type="submit"
                                 disabled={submitting || rating === 0}
-                                className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                                style={{ backgroundColor: "#439454" }}
+                                className="flex-1 bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {submitting ? "Mengirim..." : "Kirim Feedback"}
                             </button>

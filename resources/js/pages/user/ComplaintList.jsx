@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../../components/user/Navbar";
+import Navbar from "../../Components/user/Navbar";
 import axiosInstance from "../../config/axios";
 
 const ComplaintList = () => {
@@ -46,7 +46,7 @@ const ComplaintList = () => {
         const badges = {
             waiting: "bg-yellow-100 text-yellow-800 border-yellow-200",
             on_progress: "bg-blue-100 text-blue-800 border-blue-200",
-            done: "bg-green-100 text-green-800 border-green-200",
+            done: "bg-primary-100 text-primary-800 border-primary-200",
         };
         return badges[status] || "bg-gray-100 text-gray-800 border-gray-200";
     };
@@ -91,7 +91,7 @@ const ComplaintList = () => {
                 <div className="mb-8">
                     <button
                         onClick={() => navigate("/dashboard")}
-                        className="flex items-center text-gray-600 hover:text-green-600 mb-4"
+                        className="flex items-center text-gray-600 hover:text-primary-700 mb-4"
                     >
                         <svg
                             className="w-5 h-5 mr-2"
@@ -120,8 +120,7 @@ const ComplaintList = () => {
                         </div>
                         <button
                             onClick={() => navigate("/keluhan")}
-                            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-lg transition duration-200 shadow-lg hover:shadow-xl"
-                            style={{ backgroundColor: "#439454" }}
+                            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold rounded-lg transition duration-200 shadow-lg hover:shadow-xl"
                         >
                             <svg
                                 className="w-5 h-5"
@@ -148,7 +147,7 @@ const ComplaintList = () => {
                             onClick={() => setStatusFilter("all")}
                             className={`flex-1 sm:flex-none px-6 py-3 rounded-lg font-medium transition duration-200 ${
                                 statusFilter === "all"
-                                    ? "bg-green-600 text-white shadow-lg"
+                                    ? "bg-primary-700 text-white shadow-lg"
                                     : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                             }`}
                         >
@@ -178,7 +177,7 @@ const ComplaintList = () => {
                             onClick={() => setStatusFilter("done")}
                             className={`flex-1 sm:flex-none px-6 py-3 rounded-lg font-medium transition duration-200 ${
                                 statusFilter === "done"
-                                    ? "bg-green-500 text-white shadow-lg"
+                                    ? "bg-primary-600 text-white shadow-lg"
                                     : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                             }`}
                         >
@@ -190,7 +189,7 @@ const ComplaintList = () => {
                 {/* Complaints List */}
                 {loading ? (
                     <div className="flex justify-center items-center py-12">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700"></div>
                     </div>
                 ) : filteredComplaints.length === 0 ? (
                     <div className="bg-white rounded-xl shadow-md p-12 text-center">
@@ -219,7 +218,7 @@ const ComplaintList = () => {
                         </p>
                         <button
                             onClick={() => navigate("/keluhan")}
-                            className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200"
+                            className="px-6 py-3 bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition duration-200"
                         >
                             Buat Keluhan Pertama
                         </button>
@@ -234,7 +233,7 @@ const ComplaintList = () => {
                                         `/keluhan/${complaint.complaint_id}`
                                     )
                                 }
-                                className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition duration-200 cursor-pointer border-2 border-transparent hover:border-green-500"
+                                className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition duration-200 cursor-pointer border-2 border-transparent hover:border-primary-500"
                             >
                                 <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
                                     <div className="flex-1">
@@ -354,7 +353,7 @@ const ComplaintList = () => {
                                                         `/feedback/${complaint.complaint_id}`
                                                     );
                                                 }}
-                                                className="px-4 py-2 bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition duration-200 text-sm font-medium"
+                                                className="px-4 py-2 bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition duration-200 text-sm font-medium"
                                             >
                                                 Beri Feedback
                                             </button>

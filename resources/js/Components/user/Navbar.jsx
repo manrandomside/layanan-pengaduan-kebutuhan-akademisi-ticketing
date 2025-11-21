@@ -22,7 +22,6 @@ const Navbar = () => {
         fetchNotifications();
     }, []);
 
-    // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
@@ -47,7 +46,7 @@ const Navbar = () => {
     const fetchTicketBalance = async () => {
         try {
             const response = await axiosInstance.get("/user/tickets/balance");
-            setTotalTickets(response.data.total_tickets || 0);
+            setTotalTickets(response.data.data?.total_tickets || 0);
         } catch (error) {
             console.error("Error fetching ticket balance:", error);
         }
@@ -95,7 +94,7 @@ const Navbar = () => {
                     {/* Logo */}
                     <div className="flex items-center">
                         <Link to="/dashboard" className="flex items-center">
-                            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                            <div className="w-10 h-10 bg-gradient-to-br from-primary-700 to-primary-800 rounded-lg flex items-center justify-center">
                                 <span className="text-white font-bold text-xl">
                                     UPT
                                 </span>
@@ -112,8 +111,8 @@ const Navbar = () => {
                             to="/dashboard"
                             className={`px-4 py-2 rounded-lg font-medium transition duration-200 ${
                                 isActivePath("/dashboard")
-                                    ? "bg-green-50 text-green-600"
-                                    : "text-gray-600 hover:text-green-600 hover:bg-green-50"
+                                    ? "bg-primary-50 text-primary-700"
+                                    : "text-gray-600 hover:text-primary-700 hover:bg-primary-50"
                             }`}
                         >
                             Dashboard
@@ -123,8 +122,8 @@ const Navbar = () => {
                             className={`px-4 py-2 rounded-lg font-medium transition duration-200 ${
                                 isActivePath("/keluhan") ||
                                 isActivePath("/keluhan/list")
-                                    ? "bg-green-50 text-green-600"
-                                    : "text-gray-600 hover:text-green-600 hover:bg-green-50"
+                                    ? "bg-primary-50 text-primary-700"
+                                    : "text-gray-600 hover:text-primary-700 hover:bg-primary-50"
                             }`}
                         >
                             Keluhan
@@ -134,9 +133,9 @@ const Navbar = () => {
                     {/* Right Side */}
                     <div className="flex items-center space-x-4">
                         {/* Total Tickets */}
-                        <div className="hidden sm:flex items-center px-4 py-2 bg-green-50 rounded-lg">
+                        <div className="hidden sm:flex items-center px-4 py-2 bg-primary-50 rounded-lg">
                             <svg
-                                className="w-5 h-5 text-green-600 mr-2"
+                                className="w-5 h-5 text-primary-700 mr-2"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -148,7 +147,7 @@ const Navbar = () => {
                                     d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
                                 />
                             </svg>
-                            <span className="text-sm font-semibold text-green-600">
+                            <span className="text-sm font-semibold text-primary-700">
                                 {totalTickets} Tiket
                             </span>
                         </div>
@@ -161,7 +160,7 @@ const Navbar = () => {
                                         !showNotificationDropdown
                                     )
                                 }
-                                className="relative p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition duration-200"
+                                className="relative p-2 text-gray-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition duration-200"
                             >
                                 <svg
                                     className="w-6 h-6"
@@ -206,7 +205,7 @@ const Navbar = () => {
                                                 }
                                                 className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition duration-200 border-b border-gray-100 ${
                                                     notif.is_read === "unread"
-                                                        ? "bg-green-50"
+                                                        ? "bg-primary-50"
                                                         : ""
                                                 }`}
                                             >
@@ -236,9 +235,9 @@ const Navbar = () => {
                                 onClick={() =>
                                     setShowProfileDropdown(!showProfileDropdown)
                                 }
-                                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-green-50 transition duration-200"
+                                className="flex items-center space-x-2 p-2 rounded-lg hover:bg-primary-50 transition duration-200"
                             >
-                                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                                <div className="w-8 h-8 bg-gradient-to-br from-primary-700 to-primary-800 rounded-full flex items-center justify-center">
                                     <span className="text-white font-semibold text-sm">
                                         {user?.nama_lengkap
                                             ?.charAt(0)
@@ -268,7 +267,7 @@ const Navbar = () => {
                                 <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2">
                                     <Link
                                         to="/profile"
-                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600 transition duration-200"
+                                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary-50 hover:text-primary-700 transition duration-200"
                                         onClick={() =>
                                             setShowProfileDropdown(false)
                                         }
@@ -295,7 +294,7 @@ const Navbar = () => {
                         to="/dashboard"
                         className={`flex flex-col items-center py-2 px-4 rounded-lg ${
                             isActivePath("/dashboard")
-                                ? "text-green-600 bg-green-50"
+                                ? "text-primary-700 bg-primary-50"
                                 : "text-gray-600"
                         }`}
                     >
@@ -318,7 +317,7 @@ const Navbar = () => {
                         to="/keluhan"
                         className={`flex flex-col items-center py-2 px-4 rounded-lg ${
                             isActivePath("/keluhan")
-                                ? "text-green-600 bg-green-50"
+                                ? "text-primary-700 bg-primary-50"
                                 : "text-gray-600"
                         }`}
                     >
@@ -338,8 +337,8 @@ const Navbar = () => {
                         <span className="text-xs mt-1">Keluhan</span>
                     </Link>
                     <div className="flex flex-col items-center py-2 px-4">
-                        <div className="flex items-center justify-center w-6 h-6 bg-green-100 rounded-full">
-                            <span className="text-xs font-bold text-green-600">
+                        <div className="flex items-center justify-center w-6 h-6 bg-primary-100 rounded-full">
+                            <span className="text-xs font-bold text-primary-700">
                                 {totalTickets}
                             </span>
                         </div>

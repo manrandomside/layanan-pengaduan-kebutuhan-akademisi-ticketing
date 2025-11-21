@@ -115,7 +115,7 @@ const KelolaKeluhan = () => {
                     }
                     h1 {
                         text-align: center;
-                        color: #439454;
+                        color: #166534;
                         margin-bottom: 10px;
                     }
                     .subtitle {
@@ -133,7 +133,7 @@ const KelolaKeluhan = () => {
                         background-color: #f5f5f5;
                         padding: 10px;
                         margin: -15px -15px 15px -15px;
-                        border-bottom: 2px solid #439454;
+                        border-bottom: 2px solid #166534;
                     }
                     .field {
                         margin-bottom: 8px;
@@ -162,8 +162,8 @@ const KelolaKeluhan = () => {
                         color: #1e3a8a;
                     }
                     .status-done {
-                        background-color: #d1fae5;
-                        color: #065f46;
+                        background-color: #dcfce7;
+                        color: #166534;
                     }
                     .priority {
                         display: inline-block;
@@ -299,7 +299,7 @@ const KelolaKeluhan = () => {
         const badges = {
             waiting: "bg-yellow-100 text-yellow-800 border-yellow-200",
             on_progress: "bg-blue-100 text-blue-800 border-blue-200",
-            done: "bg-green-100 text-green-800 border-green-200",
+            done: "bg-primary-100 text-primary-800 border-primary-200",
         };
         return badges[status] || "bg-gray-100 text-gray-800 border-gray-200";
     };
@@ -341,7 +341,7 @@ const KelolaKeluhan = () => {
             <div className="min-h-screen bg-gray-50">
                 <Navbar />
                 <div className="flex justify-center items-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700"></div>
                 </div>
             </div>
         );
@@ -365,7 +365,7 @@ const KelolaKeluhan = () => {
                     <div
                         className={`mb-6 p-4 rounded-lg ${
                             message.type === "success"
-                                ? "bg-green-50 border border-green-200 text-green-600"
+                                ? "bg-primary-50 border border-primary-200 text-primary-700"
                                 : "bg-red-50 border border-red-200 text-red-600"
                         }`}
                     >
@@ -381,7 +381,7 @@ const KelolaKeluhan = () => {
                                 onClick={() => setStatusFilter("all")}
                                 className={`px-4 py-2 rounded-lg font-medium transition duration-200 ${
                                     statusFilter === "all"
-                                        ? "bg-green-600 text-white shadow-lg"
+                                        ? "bg-primary-700 text-white shadow-lg"
                                         : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                                 }`}
                             >
@@ -411,7 +411,7 @@ const KelolaKeluhan = () => {
                                 onClick={() => setStatusFilter("done")}
                                 className={`px-4 py-2 rounded-lg font-medium transition duration-200 ${
                                     statusFilter === "done"
-                                        ? "bg-green-500 text-white shadow-lg"
+                                        ? "bg-primary-600 text-white shadow-lg"
                                         : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                                 }`}
                             >
@@ -425,7 +425,7 @@ const KelolaKeluhan = () => {
                                 onChange={(e) =>
                                     setPriorityFilter(e.target.value)
                                 }
-                                className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                             >
                                 <option value="all">Semua Priority</option>
                                 <option value="low">Low</option>
@@ -436,7 +436,7 @@ const KelolaKeluhan = () => {
                             {selectedComplaints.length > 0 && (
                                 <button
                                     onClick={handleExportPDF}
-                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 flex items-center gap-2"
+                                    className="px-4 py-2 bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition duration-200 flex items-center gap-2"
                                 >
                                     <svg
                                         className="w-5 h-5"
@@ -457,7 +457,7 @@ const KelolaKeluhan = () => {
 
                             <button
                                 onClick={handleExportPDF}
-                                className="px-4 py-2 border-2 border-green-600 text-green-600 rounded-lg hover:bg-green-50 transition duration-200 flex items-center gap-2"
+                                className="px-4 py-2 border-2 border-primary-700 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200 flex items-center gap-2"
                             >
                                 <svg
                                     className="w-5 h-5"
@@ -489,7 +489,7 @@ const KelolaKeluhan = () => {
                                     filteredComplaints.length
                                 }
                                 onChange={handleSelectAll}
-                                className="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                                className="w-5 h-5 text-primary-700 border-gray-300 rounded focus:ring-primary-500"
                             />
                             <span className="ml-3 text-gray-700 font-medium">
                                 Pilih Semua ({filteredComplaints.length}{" "}
@@ -527,7 +527,7 @@ const KelolaKeluhan = () => {
                         {filteredComplaints.map((complaint) => (
                             <div
                                 key={complaint.complaint_id}
-                                className="bg-white rounded-xl shadow-md p-6 border-2 border-transparent hover:border-green-500 transition duration-200"
+                                className="bg-white rounded-xl shadow-md p-6 border-2 border-transparent hover:border-primary-500 transition duration-200"
                             >
                                 <div className="flex items-start gap-4">
                                     <input
@@ -540,7 +540,7 @@ const KelolaKeluhan = () => {
                                                 complaint.complaint_id
                                             )
                                         }
-                                        className="mt-1 w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                                        className="mt-1 w-5 h-5 text-primary-700 border-gray-300 rounded focus:ring-primary-500"
                                     />
 
                                     <div className="flex-1">
@@ -663,14 +663,14 @@ const KelolaKeluhan = () => {
                                                         "done"
                                                     )
                                                 }
-                                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 text-sm font-medium whitespace-nowrap"
+                                                className="px-4 py-2 bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition duration-200 text-sm font-medium whitespace-nowrap"
                                             >
                                                 Selesai
                                             </button>
                                         )}
 
                                         {complaint.status === "done" && (
-                                            <span className="px-4 py-2 bg-green-100 text-green-700 rounded-lg text-sm font-medium text-center">
+                                            <span className="px-4 py-2 bg-primary-100 text-primary-700 rounded-lg text-sm font-medium text-center">
                                                 Selesai
                                             </span>
                                         )}

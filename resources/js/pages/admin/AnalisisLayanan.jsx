@@ -104,7 +104,7 @@ const AnalisisLayanan = () => {
                         key={star}
                         className={`w-5 h-5 ${
                             star <= rating
-                                ? "text-yellow-400 fill-current"
+                                ? "text-accent-300 fill-current"
                                 : "text-gray-300"
                         }`}
                         fill="none"
@@ -124,7 +124,8 @@ const AnalisisLayanan = () => {
     };
 
     const getRatingBadgeColor = (rating) => {
-        if (rating >= 4) return "bg-green-100 text-green-700 border-green-200";
+        if (rating >= 4)
+            return "bg-primary-100 text-primary-700 border-primary-200";
         if (rating === 3)
             return "bg-yellow-100 text-yellow-700 border-yellow-200";
         return "bg-red-100 text-red-700 border-red-200";
@@ -146,7 +147,7 @@ const AnalisisLayanan = () => {
             <div className="min-h-screen bg-gray-50">
                 <Navbar />
                 <div className="flex justify-center items-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700"></div>
                 </div>
             </div>
         );
@@ -171,7 +172,7 @@ const AnalisisLayanan = () => {
                     <div
                         className={`mb-6 p-4 rounded-lg border ${
                             message.type === "success"
-                                ? "bg-green-50 border-green-200 text-green-700"
+                                ? "bg-primary-50 border-primary-200 text-primary-700"
                                 : "bg-red-50 border-red-200 text-red-700"
                         }`}
                     >
@@ -191,7 +192,7 @@ const AnalisisLayanan = () => {
                                 onChange={(e) =>
                                     setRatingFilter(e.target.value)
                                 }
-                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                             >
                                 <option value="all">Semua Rating</option>
                                 <option value="5">5 Bintang</option>
@@ -248,7 +249,7 @@ const AnalisisLayanan = () => {
                                 {/* Feedback Header */}
                                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 pb-4 border-b border-gray-200">
                                     <div className="flex items-start gap-4 mb-4 md:mb-0">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <div className="w-12 h-12 bg-gradient-to-br from-primary-700 to-primary-800 rounded-full flex items-center justify-center flex-shrink-0">
                                             <span className="text-white font-bold text-lg">
                                                 {feedback.user?.nama_lengkap
                                                     ?.charAt(0)
@@ -307,7 +308,7 @@ const AnalisisLayanan = () => {
                                         <div className="flex-1">
                                             <p className="text-sm font-medium text-gray-700 mb-1">
                                                 Terkait Keluhan:{" "}
-                                                <span className="font-mono text-green-600">
+                                                <span className="font-mono text-primary-700">
                                                     {feedback.complaint
                                                         ?.ticket_id || "-"}
                                                 </span>
@@ -384,10 +385,10 @@ const AnalisisLayanan = () => {
                                                             key={
                                                                 response.response_id
                                                             }
-                                                            className="bg-green-50 p-4 rounded-lg border border-green-200"
+                                                            className="bg-primary-50 p-4 rounded-lg border border-primary-200"
                                                         >
                                                             <div className="flex items-start gap-3">
-                                                                <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                                                <div className="w-8 h-8 bg-primary-700 rounded-full flex items-center justify-center flex-shrink-0">
                                                                     <svg
                                                                         className="w-4 h-4 text-white"
                                                                         fill="none"
@@ -443,8 +444,7 @@ const AnalisisLayanan = () => {
                                     </p>
                                     <button
                                         onClick={() => openReplyModal(feedback)}
-                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 text-sm font-medium flex items-center gap-2"
-                                        style={{ backgroundColor: "#439454" }}
+                                        className="px-4 py-2 bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition duration-200 text-sm font-medium flex items-center gap-2"
                                     >
                                         <svg
                                             className="w-4 h-4"
@@ -502,7 +502,7 @@ const AnalisisLayanan = () => {
                             {/* Feedback Info */}
                             <div className="bg-gray-50 rounded-lg p-4 mb-6">
                                 <div className="flex items-center gap-3 mb-3">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-primary-700 to-primary-800 rounded-full flex items-center justify-center">
                                         <span className="text-white font-bold">
                                             {selectedFeedback.user?.nama_lengkap
                                                 ?.charAt(0)
@@ -542,7 +542,7 @@ const AnalisisLayanan = () => {
                                         setReplyText(e.target.value)
                                     }
                                     rows="6"
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                     placeholder="Tulis tanggapan Anda untuk feedback ini..."
                                     disabled={replyLoading}
                                     required
@@ -562,8 +562,7 @@ const AnalisisLayanan = () => {
                                 <button
                                     type="submit"
                                     disabled={replyLoading || !replyText.trim()}
-                                    className="flex-1 px-6 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    style={{ backgroundColor: "#439454" }}
+                                    className="flex-1 px-6 py-3 bg-primary-700 text-white font-semibold rounded-lg hover:bg-primary-800 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {replyLoading
                                         ? "Mengirim..."

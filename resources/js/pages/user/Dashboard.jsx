@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Navbar from "../../components/user/Navbar";
+import Navbar from "../../Components/user/Navbar";
 import axiosInstance from "../../config/axios";
 
 const Dashboard = () => {
@@ -25,8 +25,8 @@ const Dashboard = () => {
         try {
             const response = await axiosInstance.get("/user/tickets/balance");
             setTicketBalance({
-                total_tickets: response.data.total_tickets || 0,
-                daily_tickets: response.data.daily_tickets || 0,
+                total_tickets: response.data.data?.total_tickets || 0,
+                daily_tickets: response.data.data?.daily_tickets || 0,
             });
         } catch (error) {
             console.error("Error fetching ticket balance:", error);
@@ -98,7 +98,7 @@ const Dashboard = () => {
         const badges = {
             waiting: "bg-yellow-100 text-yellow-800",
             on_progress: "bg-blue-100 text-blue-800",
-            done: "bg-green-100 text-green-800",
+            done: "bg-primary-100 text-primary-800",
         };
         return badges[status] || "bg-gray-100 text-gray-800";
     };
@@ -130,7 +130,7 @@ const Dashboard = () => {
                     <div
                         className={`mb-6 p-4 rounded-lg ${
                             message.type === "success"
-                                ? "bg-green-50 border border-green-200 text-green-600"
+                                ? "bg-primary-50 border border-primary-200 text-primary-700"
                                 : "bg-red-50 border border-red-200 text-red-600"
                         }`}
                     >
@@ -147,7 +147,7 @@ const Dashboard = () => {
                                     Tiket Anda
                                 </h2>
                                 <svg
-                                    className="w-8 h-8 text-green-600"
+                                    className="w-8 h-8 text-primary-700"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -162,11 +162,11 @@ const Dashboard = () => {
                             </div>
 
                             <div className="space-y-4">
-                                <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-lg p-4 border border-green-200">
+                                <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-4 border border-primary-200">
                                     <p className="text-sm text-gray-600 mb-1">
                                         Total Tiket
                                     </p>
-                                    <p className="text-3xl font-bold text-green-600">
+                                    <p className="text-3xl font-bold text-primary-700">
                                         {ticketBalance.total_tickets}
                                     </p>
                                 </div>
@@ -186,8 +186,7 @@ const Dashboard = () => {
                                         claimLoading ||
                                         ticketBalance.daily_tickets >= 3
                                     }
-                                    className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                                    style={{ backgroundColor: "#439454" }}
+                                    className="w-full bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {claimLoading
                                         ? "Loading..."
@@ -227,12 +226,12 @@ const Dashboard = () => {
                                             setSearchKeyword(e.target.value)
                                         }
                                         placeholder="Cari berdasarkan ruangan, lab, atau keluhan..."
-                                        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                     />
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition duration-200 disabled:opacity-50"
+                                        className="px-6 py-3 bg-primary-700 text-white rounded-lg hover:bg-primary-800 transition duration-200 disabled:opacity-50"
                                     >
                                         {loading ? (
                                             <svg
@@ -283,7 +282,7 @@ const Dashboard = () => {
                                         {searchResults.map((complaint) => (
                                             <div
                                                 key={complaint.complaint_id}
-                                                className="border border-gray-200 rounded-lg p-4 hover:border-green-500 transition duration-200"
+                                                className="border border-gray-200 rounded-lg p-4 hover:border-primary-500 transition duration-200"
                                             >
                                                 <div className="flex justify-between items-start mb-2">
                                                     <div>
@@ -347,7 +346,7 @@ const Dashboard = () => {
                                         recentComplaints.map((complaint) => (
                                             <div
                                                 key={complaint.complaint_id}
-                                                className="border border-gray-200 rounded-lg p-4 hover:border-green-500 transition duration-200 cursor-pointer"
+                                                className="border border-gray-200 rounded-lg p-4 hover:border-primary-500 transition duration-200 cursor-pointer"
                                                 onClick={() =>
                                                     navigate(
                                                         `/keluhan/${complaint.complaint_id}`
@@ -414,7 +413,7 @@ const Dashboard = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <button
                             onClick={() => navigate("/keluhan")}
-                            className="flex items-center justify-center gap-3 p-4 border-2 border-green-500 text-green-600 rounded-lg hover:bg-green-50 transition duration-200"
+                            className="flex items-center justify-center gap-3 p-4 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"
                         >
                             <svg
                                 className="w-6 h-6"

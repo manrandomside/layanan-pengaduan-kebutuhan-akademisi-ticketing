@@ -143,7 +143,7 @@ const KelolaPengguna = () => {
             <div className="min-h-screen bg-gray-50">
                 <Navbar />
                 <div className="flex justify-center items-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700"></div>
                 </div>
             </div>
         );
@@ -166,8 +166,7 @@ const KelolaPengguna = () => {
                         </div>
                         <button
                             onClick={() => setShowCreateModal(true)}
-                            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold rounded-lg transition duration-200 shadow-lg hover:shadow-xl"
-                            style={{ backgroundColor: "#439454" }}
+                            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold rounded-lg transition duration-200 shadow-lg hover:shadow-xl"
                         >
                             <svg
                                 className="w-5 h-5"
@@ -191,7 +190,7 @@ const KelolaPengguna = () => {
                     <div
                         className={`mb-6 p-4 rounded-lg ${
                             message.type === "success"
-                                ? "bg-green-50 border border-green-200 text-green-600"
+                                ? "bg-primary-50 border border-primary-200 text-primary-700"
                                 : "bg-red-50 border border-red-200 text-red-600"
                         }`}
                     >
@@ -207,7 +206,7 @@ const KelolaPengguna = () => {
                                 onClick={() => setStatusFilter("all")}
                                 className={`px-4 py-2 rounded-lg font-medium transition duration-200 ${
                                     statusFilter === "all"
-                                        ? "bg-green-600 text-white shadow-lg"
+                                        ? "bg-primary-700 text-white shadow-lg"
                                         : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                                 }`}
                             >
@@ -217,7 +216,7 @@ const KelolaPengguna = () => {
                                 onClick={() => setStatusFilter("dosen")}
                                 className={`px-4 py-2 rounded-lg font-medium transition duration-200 ${
                                     statusFilter === "dosen"
-                                        ? "bg-green-600 text-white shadow-lg"
+                                        ? "bg-primary-700 text-white shadow-lg"
                                         : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                                 }`}
                             >
@@ -227,7 +226,7 @@ const KelolaPengguna = () => {
                                 onClick={() => setStatusFilter("asdos")}
                                 className={`px-4 py-2 rounded-lg font-medium transition duration-200 ${
                                     statusFilter === "asdos"
-                                        ? "bg-green-600 text-white shadow-lg"
+                                        ? "bg-primary-700 text-white shadow-lg"
                                         : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                                 }`}
                             >
@@ -237,7 +236,7 @@ const KelolaPengguna = () => {
                                 onClick={() => setStatusFilter("staff")}
                                 className={`px-4 py-2 rounded-lg font-medium transition duration-200 ${
                                     statusFilter === "staff"
-                                        ? "bg-green-600 text-white shadow-lg"
+                                        ? "bg-primary-700 text-white shadow-lg"
                                         : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                                 }`}
                             >
@@ -247,7 +246,7 @@ const KelolaPengguna = () => {
                                 onClick={() => setStatusFilter("mahasiswa")}
                                 className={`px-4 py-2 rounded-lg font-medium transition duration-200 ${
                                     statusFilter === "mahasiswa"
-                                        ? "bg-green-600 text-white shadow-lg"
+                                        ? "bg-primary-700 text-white shadow-lg"
                                         : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                                 }`}
                             >
@@ -261,7 +260,7 @@ const KelolaPengguna = () => {
                                 onChange={(e) =>
                                     setActiveFilter(e.target.value)
                                 }
-                                className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                             >
                                 <option value="all">Semua Status</option>
                                 <option value="active">Aktif</option>
@@ -328,7 +327,7 @@ const KelolaPengguna = () => {
                                         >
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center">
-                                                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                                                    <div className="w-10 h-10 bg-gradient-to-br from-primary-700 to-primary-800 rounded-full flex items-center justify-center">
                                                         <span className="text-white font-semibold">
                                                             {user.nama_lengkap
                                                                 .charAt(0)
@@ -359,7 +358,7 @@ const KelolaPengguna = () => {
                                                     className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                                         user.is_active ===
                                                         "active"
-                                                            ? "bg-green-100 text-green-800"
+                                                            ? "bg-primary-100 text-primary-800"
                                                             : "bg-red-100 text-red-800"
                                                     }`}
                                                 >
@@ -387,7 +386,7 @@ const KelolaPengguna = () => {
                                                                 user.user_id
                                                             )
                                                         }
-                                                        className="text-green-600 hover:text-green-900"
+                                                        className="text-primary-700 hover:text-primary-900"
                                                     >
                                                         Aktifkan
                                                     </button>
@@ -454,7 +453,7 @@ const KelolaPengguna = () => {
                                                 createErrors.nama_lengkap
                                                     ? "border-red-500"
                                                     : "border-gray-300"
-                                            } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
+                                            } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent`}
                                             disabled={createLoading}
                                         />
                                         {createErrors.nama_lengkap && (
@@ -481,7 +480,7 @@ const KelolaPengguna = () => {
                                                 createErrors.nim_nip
                                                     ? "border-red-500"
                                                     : "border-gray-300"
-                                            } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
+                                            } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent`}
                                             disabled={createLoading}
                                         />
                                         {createErrors.nim_nip && (
@@ -510,7 +509,7 @@ const KelolaPengguna = () => {
                                                 createErrors.email
                                                     ? "border-red-500"
                                                     : "border-gray-300"
-                                            } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
+                                            } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent`}
                                             disabled={createLoading}
                                         />
                                         {createErrors.email && (
@@ -537,7 +536,7 @@ const KelolaPengguna = () => {
                                                 createErrors.no_telepon
                                                     ? "border-red-500"
                                                     : "border-gray-300"
-                                            } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
+                                            } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent`}
                                             disabled={createLoading}
                                         />
                                         {createErrors.no_telepon && (
@@ -564,7 +563,7 @@ const KelolaPengguna = () => {
                                             createErrors.status
                                                 ? "border-red-500"
                                                 : "border-gray-300"
-                                        } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white`}
+                                        } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white`}
                                         disabled={createLoading}
                                     >
                                         <option value="">Pilih Status</option>
@@ -599,7 +598,7 @@ const KelolaPengguna = () => {
                                             createErrors.password
                                                 ? "border-red-500"
                                                 : "border-gray-300"
-                                        } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent`}
+                                        } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent`}
                                         placeholder="Minimal 8 karakter"
                                         disabled={createLoading}
                                     />
@@ -624,8 +623,7 @@ const KelolaPengguna = () => {
                                     <button
                                         type="submit"
                                         disabled={createLoading}
-                                        className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                                        style={{ backgroundColor: "#439454" }}
+                                        className="flex-1 bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {createLoading
                                             ? "Menyimpan..."

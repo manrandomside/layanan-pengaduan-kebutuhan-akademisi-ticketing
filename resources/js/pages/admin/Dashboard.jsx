@@ -49,7 +49,7 @@ const Dashboard = () => {
         const badges = {
             waiting: "bg-yellow-100 text-yellow-800 border-yellow-200",
             on_progress: "bg-blue-100 text-blue-800 border-blue-200",
-            done: "bg-green-100 text-green-800 border-green-200",
+            done: "bg-primary-100 text-primary-800 border-primary-200",
         };
         return badges[status] || "bg-gray-100 text-gray-800 border-gray-200";
     };
@@ -86,7 +86,7 @@ const Dashboard = () => {
             <div className="min-h-screen bg-gray-50">
                 <Navbar />
                 <div className="flex justify-center items-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700"></div>
                 </div>
             </div>
         );
@@ -192,7 +192,7 @@ const Dashboard = () => {
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-green-500">
+                    <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-primary-500">
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-gray-600 mb-1">
@@ -202,9 +202,9 @@ const Dashboard = () => {
                                     {stats.done}
                                 </p>
                             </div>
-                            <div className="p-3 bg-green-100 rounded-lg">
+                            <div className="p-3 bg-primary-100 rounded-lg">
                                 <svg
-                                    className="w-8 h-8 text-green-600"
+                                    className="w-8 h-8 text-primary-700"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -229,7 +229,7 @@ const Dashboard = () => {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <button
                             onClick={() => navigate("/admin/kelola-keluhan")}
-                            className="flex items-center justify-center gap-3 p-4 border-2 border-green-500 text-green-600 rounded-lg hover:bg-green-50 transition duration-200"
+                            className="flex items-center justify-center gap-3 p-4 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"
                         >
                             <svg
                                 className="w-6 h-6"
@@ -303,7 +303,7 @@ const Dashboard = () => {
                         </h2>
                         <button
                             onClick={() => navigate("/admin/kelola-keluhan")}
-                            className="text-sm text-green-600 hover:text-green-700 font-medium"
+                            className="text-sm text-primary-700 hover:text-primary-800 font-medium"
                         >
                             Lihat Semua
                         </button>
@@ -321,7 +321,7 @@ const Dashboard = () => {
                                     onClick={() =>
                                         navigate("/admin/kelola-keluhan")
                                     }
-                                    className="border border-gray-200 rounded-lg p-4 hover:border-green-500 transition duration-200 cursor-pointer"
+                                    className="border border-gray-200 rounded-lg p-4 hover:border-primary-500 transition duration-200 cursor-pointer"
                                 >
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex-1">

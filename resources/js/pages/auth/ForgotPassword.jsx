@@ -41,13 +41,13 @@ const ForgotPassword = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-green-50 px-4">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-primary-50 px-4">
             <div className="w-full max-w-md">
                 <div className="bg-white rounded-2xl shadow-xl p-8">
                     <div className="text-center mb-8">
-                        <div className="inline-block p-3 bg-green-100 rounded-full mb-4">
+                        <div className="inline-block p-3 bg-primary-100 rounded-full mb-4">
                             <svg
-                                className="w-8 h-8 text-green-600"
+                                className="w-8 h-8 text-primary-700"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -76,8 +76,10 @@ const ForgotPassword = () => {
                     )}
 
                     {success && (
-                        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                            <p className="text-green-600 text-sm">{success}</p>
+                        <div className="mb-6 p-4 bg-primary-50 border border-primary-200 rounded-lg">
+                            <p className="text-primary-700 text-sm">
+                                {success}
+                            </p>
                         </div>
                     )}
 
@@ -99,7 +101,7 @@ const ForgotPassword = () => {
                                     setError("");
                                     setSuccess("");
                                 }}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200"
                                 placeholder="contoh@email.com"
                                 disabled={loading}
                             />
@@ -108,8 +110,7 @@ const ForgotPassword = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                            style={{ backgroundColor: "#439454" }}
+                            className="w-full bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading
                                 ? "Mengirim..."
@@ -120,7 +121,7 @@ const ForgotPassword = () => {
                     <div className="mt-6 text-center text-sm text-gray-600">
                         <Link
                             to="/login"
-                            className="text-green-600 hover:text-green-700 font-semibold"
+                            className="text-primary-700 hover:text-primary-800 font-semibold"
                         >
                             Kembali ke Login
                         </Link>

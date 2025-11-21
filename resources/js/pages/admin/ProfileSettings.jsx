@@ -141,7 +141,7 @@ const AdminProfileSettings = () => {
                 <div className="mb-8">
                     <button
                         onClick={() => navigate("/admin/dashboard")}
-                        className="flex items-center text-gray-600 hover:text-green-600 mb-4"
+                        className="flex items-center text-gray-600 hover:text-primary-700 mb-4"
                     >
                         <svg
                             className="w-5 h-5 mr-2"
@@ -173,7 +173,7 @@ const AdminProfileSettings = () => {
                             onClick={() => setActiveTab("profile")}
                             className={`flex-1 px-6 py-4 text-sm font-medium transition duration-200 ${
                                 activeTab === "profile"
-                                    ? "text-green-600 border-b-2 border-green-600"
+                                    ? "text-primary-700 border-b-2 border-primary-700"
                                     : "text-gray-600 hover:text-gray-800"
                             }`}
                         >
@@ -183,7 +183,7 @@ const AdminProfileSettings = () => {
                             onClick={() => setActiveTab("password")}
                             className={`flex-1 px-6 py-4 text-sm font-medium transition duration-200 ${
                                 activeTab === "password"
-                                    ? "text-green-600 border-b-2 border-green-600"
+                                    ? "text-primary-700 border-b-2 border-primary-700"
                                     : "text-gray-600 hover:text-gray-800"
                             }`}
                         >
@@ -202,7 +202,7 @@ const AdminProfileSettings = () => {
                             <div
                                 className={`mb-6 p-4 rounded-lg border ${
                                     profileMessage.type === "success"
-                                        ? "bg-green-50 border-green-200 text-green-600"
+                                        ? "bg-primary-50 border-primary-200 text-primary-700"
                                         : "bg-red-50 border-red-200 text-red-600"
                                 }`}
                             >
@@ -227,7 +227,7 @@ const AdminProfileSettings = () => {
                                             nama: e.target.value,
                                         })
                                     }
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                     placeholder="Masukkan nama admin"
                                     disabled={profileLoading}
                                     required
@@ -250,8 +250,7 @@ const AdminProfileSettings = () => {
                                 <button
                                     type="submit"
                                     disabled={profileLoading}
-                                    className="flex-1 bg-green-600 text-white font-semibold py-3 rounded-lg hover:bg-green-700 transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                                    style={{ backgroundColor: "#439454" }}
+                                    className="flex-1 bg-primary-700 text-white font-semibold py-3 rounded-lg hover:bg-primary-800 transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {profileLoading
                                         ? "Menyimpan..."
@@ -272,7 +271,7 @@ const AdminProfileSettings = () => {
                             <div
                                 className={`mb-6 p-4 rounded-lg border ${
                                     passwordMessage.type === "success"
-                                        ? "bg-green-50 border-green-200 text-green-600"
+                                        ? "bg-primary-50 border-primary-200 text-primary-700"
                                         : "bg-red-50 border-red-200 text-red-600"
                                 }`}
                             >
@@ -331,7 +330,7 @@ const AdminProfileSettings = () => {
                                                 new_password: e.target.value,
                                             })
                                         }
-                                        className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                         placeholder="Masukkan password baru"
                                         disabled={passwordLoading}
                                     />
@@ -403,7 +402,7 @@ const AdminProfileSettings = () => {
                                                     e.target.value,
                                             })
                                         }
-                                        className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                         placeholder="Konfirmasi password baru"
                                         disabled={passwordLoading}
                                     />
@@ -476,8 +475,7 @@ const AdminProfileSettings = () => {
                                 <button
                                     type="submit"
                                     disabled={passwordLoading}
-                                    className="flex-1 bg-green-600 text-white font-semibold py-3 rounded-lg hover:bg-green-700 transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                                    style={{ backgroundColor: "#439454" }}
+                                    className="flex-1 bg-primary-700 text-white font-semibold py-3 rounded-lg hover:bg-primary-800 transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {passwordLoading
                                         ? "Mengubah Password..."

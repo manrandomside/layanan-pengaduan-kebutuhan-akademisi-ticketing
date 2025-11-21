@@ -52,7 +52,7 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-green-50 px-4 py-8">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-primary-50 px-4 py-8">
             <div className="w-full max-w-2xl">
                 <div className="bg-white rounded-2xl shadow-xl p-8">
                     <div className="text-center mb-8">
@@ -91,7 +91,7 @@ const Register = () => {
                                         errors.nama_lengkap
                                             ? "border-red-500"
                                             : "border-gray-300"
-                                    } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200`}
+                                    } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200`}
                                     placeholder="Masukkan nama lengkap"
                                     disabled={loading}
                                 />
@@ -119,7 +119,7 @@ const Register = () => {
                                         errors.nim_nip
                                             ? "border-red-500"
                                             : "border-gray-300"
-                                    } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200`}
+                                    } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200`}
                                     placeholder="Masukkan NIM/NIP"
                                     disabled={loading}
                                 />
@@ -149,7 +149,7 @@ const Register = () => {
                                         errors.email
                                             ? "border-red-500"
                                             : "border-gray-300"
-                                    } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200`}
+                                    } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200`}
                                     placeholder="contoh@email.com"
                                     disabled={loading}
                                 />
@@ -177,7 +177,7 @@ const Register = () => {
                                         errors.no_telepon
                                             ? "border-red-500"
                                             : "border-gray-300"
-                                    } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200`}
+                                    } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200`}
                                     placeholder="08xxxxxxxxxx"
                                     disabled={loading}
                                 />
@@ -205,7 +205,7 @@ const Register = () => {
                                     errors.status
                                         ? "border-red-500"
                                         : "border-gray-300"
-                                } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200 bg-white`}
+                                } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200 bg-white`}
                                 disabled={loading}
                             >
                                 <option value="">Pilih Status</option>
@@ -239,7 +239,7 @@ const Register = () => {
                                         errors.password
                                             ? "border-red-500"
                                             : "border-gray-300"
-                                    } rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition duration-200`}
+                                    } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200`}
                                     placeholder="Minimal 8 karakter"
                                     disabled={loading}
                                 />
@@ -297,8 +297,7 @@ const Register = () => {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                            style={{ backgroundColor: "#439454" }}
+                            className="w-full bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? "Loading..." : "Daftar"}
                         </button>
@@ -308,7 +307,7 @@ const Register = () => {
                         Sudah punya akun?{" "}
                         <Link
                             to="/login"
-                            className="text-green-600 hover:text-green-700 font-semibold"
+                            className="text-primary-700 hover:text-primary-800 font-semibold"
                         >
                             Login disini
                         </Link>

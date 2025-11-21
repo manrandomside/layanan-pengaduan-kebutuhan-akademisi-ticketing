@@ -10,15 +10,12 @@ use Illuminate\Support\Facades\Validator;
 
 class ComplaintController extends Controller
 {
-    /**
-     * Submit new complaint using one ticket
-     */
     public function submitComplaint(Request $request)
     {
         $user = $request->user();
 
         $validator = Validator::make($request->all(), [
-            'ticket_id' => 'required|string|exists:tickets,ticket_id',
+            'ticket_id' => 'nullable|string|exists:tickets,ticket_id',
             'kelas' => 'nullable|string|max:100',
             'lab' => 'nullable|string|max:100',
             'ruangan' => 'nullable|string|max:100',
@@ -34,26 +31,27 @@ class ComplaintController extends Controller
             ], 422);
         }
 
-        $ticket = Ticket::where('ticket_id', $request->ticket_id)
-            ->where('user_id', $user->user_id)
-            ->first();
+        if ($request->ticket_id) {
+            $ticket = Ticket::where('ticket_id', $request->ticket_id)
+                ->where('user_id', $user->user_id)
+                ->where('is_used', 'available')
+                ->first();
+        } else {
+            $ticket = Ticket::where('user_id', $user->user_id)
+                ->where('is_used', 'available')
+                ->orderBy('claimed_at', 'asc')
+                ->first();
+        }
 
         if (!$ticket) {
             return response()->json([
                 'success' => false,
-                'message' => 'Ticket not found or does not belong to you'
+                'message' => 'Tidak ada tiket tersedia. Silakan claim tiket terlebih dahulu.'
             ], 404);
         }
 
-        if ($ticket->is_used === 'used') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Ticket has already been used'
-            ], 400);
-        }
-
         $complaint = Complaint::create([
-            'ticket_id' => $request->ticket_id,
+            'ticket_id' => $ticket->ticket_id,
             'user_id' => $user->user_id,
             'nama_lengkap' => $user->nama_lengkap,
             'nim_nip' => $user->nim_nip,
@@ -77,14 +75,11 @@ class ComplaintController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Complaint submitted successfully',
+            'message' => 'Keluhan berhasil diajukan',
             'data' => $complaint
         ], 201);
     }
 
-    /**
-     * Get my complaints for authenticated user
-     */
     public function getMyComplaints(Request $request)
     {
         $user = $request->user();
@@ -106,9 +101,6 @@ class ComplaintController extends Controller
         ], 200);
     }
 
-    /**
-     * Get complaint detail
-     */
     public function getComplaintDetail(Request $request, $id)
     {
         $complaint = Complaint::with(['user', 'ticket', 'statusHistories', 'feedback.responses.admin'])
@@ -127,9 +119,6 @@ class ComplaintController extends Controller
         ], 200);
     }
 
-    /**
-     * Search complaint history (all complaints, not just user's)
-     */
     public function searchComplaintHistory(Request $request)
     {
         $keyword = $request->query('keyword');
@@ -156,9 +145,6 @@ class ComplaintController extends Controller
         ], 200);
     }
 
-    /**
-     * Get all complaints for admin
-     */
     public function getAllComplaints(Request $request)
     {
         $status = $request->query('status');
@@ -184,9 +170,6 @@ class ComplaintController extends Controller
         ], 200);
     }
 
-    /**
-     * Update complaint status by admin
-     */
     public function updateComplaintStatus(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
