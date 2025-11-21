@@ -13,6 +13,33 @@ use Illuminate\Support\Facades\Password;
 class AuthController extends Controller
 {
     /**
+     * Get authenticated user/admin info
+     */
+    public function me(Request $request)
+    {
+        $user = $request->user();
+        
+        // Check if user is Admin or User model
+        $role = $user instanceof Admin ? 'admin' : 'user';
+        
+        // Check if user is active (only for User model)
+        if ($role === 'user' && $user->is_active !== 'active') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your account has been deactivated by admin'
+            ], 403);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'user' => $user,
+                'role' => $role,
+            ]
+        ], 200);
+    }
+
+    /**
      * Register new user
      */
     public function register(Request $request)

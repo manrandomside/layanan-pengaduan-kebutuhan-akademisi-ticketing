@@ -22,17 +22,48 @@ export const AuthProvider = ({ children }) => {
         checkAuth();
     }, []);
 
-    const checkAuth = () => {
+    const checkAuth = async () => {
         const token = localStorage.getItem("auth_token");
-        const userData = localStorage.getItem("user_data");
-        const userRole = localStorage.getItem("user_role");
 
-        if (token && userData && userRole) {
-            setIsAuthenticated(true);
-            setUser(JSON.parse(userData));
-            setRole(userRole);
+        if (!token) {
+            setLoading(false);
+            return;
         }
-        setLoading(false);
+
+        try {
+            // Verify token dengan backend
+            const response = await axiosInstance.get("/auth/me");
+
+            if (response.data.success) {
+                const { user: userData, role: userRole } = response.data.data;
+
+                setIsAuthenticated(true);
+                setUser(userData);
+                setRole(userRole);
+
+                // Update localStorage with fresh data
+                localStorage.setItem("user_data", JSON.stringify(userData));
+                localStorage.setItem("user_role", userRole);
+            } else {
+                // Token invalid, clear localStorage
+                clearAuth();
+            }
+        } catch (error) {
+            console.error("Auth check failed:", error);
+            // Token invalid or expired, clear localStorage
+            clearAuth();
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const clearAuth = () => {
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("user_data");
+        localStorage.removeItem("user_role");
+        setIsAuthenticated(false);
+        setUser(null);
+        setRole(null);
     };
 
     // Login User
@@ -43,17 +74,24 @@ export const AuthProvider = ({ children }) => {
                 password,
             });
 
-            const { token, user } = response.data;
+            if (response.data.success) {
+                const { token, user: userData } = response.data.data;
 
-            localStorage.setItem("auth_token", token);
-            localStorage.setItem("user_data", JSON.stringify(user));
-            localStorage.setItem("user_role", "user");
+                localStorage.setItem("auth_token", token);
+                localStorage.setItem("user_data", JSON.stringify(userData));
+                localStorage.setItem("user_role", "user");
 
-            setIsAuthenticated(true);
-            setUser(user);
-            setRole("user");
+                setIsAuthenticated(true);
+                setUser(userData);
+                setRole("user");
 
-            return { success: true };
+                return { success: true };
+            }
+
+            return {
+                success: false,
+                message: response.data.message || "Login gagal",
+            };
         } catch (error) {
             const message = error.response?.data?.message || "Login gagal";
             return { success: false, message };
@@ -68,17 +106,24 @@ export const AuthProvider = ({ children }) => {
                 password,
             });
 
-            const { token, admin } = response.data;
+            if (response.data.success) {
+                const { token, admin: adminData } = response.data.data;
 
-            localStorage.setItem("auth_token", token);
-            localStorage.setItem("user_data", JSON.stringify(admin));
-            localStorage.setItem("user_role", "admin");
+                localStorage.setItem("auth_token", token);
+                localStorage.setItem("user_data", JSON.stringify(adminData));
+                localStorage.setItem("user_role", "admin");
 
-            setIsAuthenticated(true);
-            setUser(admin);
-            setRole("admin");
+                setIsAuthenticated(true);
+                setUser(adminData);
+                setRole("admin");
 
-            return { success: true };
+                return { success: true };
+            }
+
+            return {
+                success: false,
+                message: response.data.message || "Login gagal",
+            };
         } catch (error) {
             const message = error.response?.data?.message || "Login gagal";
             return { success: false, message };
@@ -93,17 +138,24 @@ export const AuthProvider = ({ children }) => {
                 userData
             );
 
-            const { token, user } = response.data;
+            if (response.data.success) {
+                const { token, user: newUser } = response.data.data;
 
-            localStorage.setItem("auth_token", token);
-            localStorage.setItem("user_data", JSON.stringify(user));
-            localStorage.setItem("user_role", "user");
+                localStorage.setItem("auth_token", token);
+                localStorage.setItem("user_data", JSON.stringify(newUser));
+                localStorage.setItem("user_role", "user");
 
-            setIsAuthenticated(true);
-            setUser(user);
-            setRole("user");
+                setIsAuthenticated(true);
+                setUser(newUser);
+                setRole("user");
 
-            return { success: true };
+                return { success: true };
+            }
+
+            return {
+                success: false,
+                message: response.data.message || "Registrasi gagal",
+            };
         } catch (error) {
             const message = error.response?.data?.message || "Registrasi gagal";
             const errors = error.response?.data?.errors || {};
@@ -122,13 +174,7 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error("Logout error:", error);
         } finally {
-            localStorage.removeItem("auth_token");
-            localStorage.removeItem("user_data");
-            localStorage.removeItem("user_role");
-
-            setIsAuthenticated(false);
-            setUser(null);
-            setRole(null);
+            clearAuth();
         }
     };
 
