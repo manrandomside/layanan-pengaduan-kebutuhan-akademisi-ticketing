@@ -86,13 +86,13 @@ const Navbar = () => {
                             to="/admin/dashboard"
                             className="flex items-center"
                         >
-                            <div className="w-10 h-10 bg-gradient-to-br from-primary-700 to-primary-800 rounded-lg flex items-center justify-center">
-                                <span className="text-white font-bold text-xl">
-                                    UPT
-                                </span>
-                            </div>
+                            <img
+                                src="/images/logo_UPT.png"
+                                alt="Logo UPT"
+                                className="w-32 h-32 object-contain"
+                            />
                             <span className="ml-3 text-xl font-bold text-gray-800 hidden sm:block">
-                                Admin Panel
+                                Admin Panel Ticketing System
                             </span>
                         </Link>
                     </div>
