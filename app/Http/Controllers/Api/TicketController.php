@@ -18,22 +18,23 @@ class TicketController extends Controller
         $user = $request->user();
 
         $this->checkAndResetDailyTickets($user);
+        $user->refresh();
 
         if ($user->daily_tickets <= 0) {
             return response()->json([
                 'success' => false,
-                'message' => 'Daily ticket limit reached. You can claim tickets again tomorrow.'
+                'message' => 'Limit harian tercapai. Coba lagi besok.'
             ], 403);
         }
 
-        if ($user->total_tickets >= 50) {
+        if ($user->total_tickets >= 15) {
             return response()->json([
                 'success' => false,
-                'message' => 'Maximum ticket limit reached (50 tickets). Please use your existing tickets.'
+                'message' => 'Batas maksimal tiket tercapai (15 tiket). Silakan gunakan tiket yang sudah ada.'
             ], 403);
         }
 
-        $claimableCount = min($user->daily_tickets, 3, 50 - $user->total_tickets);
+        $claimableCount = min($user->daily_tickets, 3, 15 - $user->total_tickets);
 
         $tickets = [];
         for ($i = 0; $i < $claimableCount; $i++) {
@@ -54,7 +55,7 @@ class TicketController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => "Successfully claimed {$claimableCount} ticket(s)",
+            'message' => "Berhasil claim {$claimableCount} tiket",
             'data' => [
                 'tickets' => $tickets,
                 'total_tickets' => $user->total_tickets,
@@ -71,6 +72,7 @@ class TicketController extends Controller
         $user = $request->user();
 
         $this->checkAndResetDailyTickets($user);
+        $user->refresh();
 
         $availableTickets = Ticket::where('user_id', $user->user_id)
             ->where('is_used', 'available')
@@ -110,13 +112,12 @@ class TicketController extends Controller
     private function checkAndResetDailyTickets(User $user)
     {
         $today = now()->toDateString();
+        $lastReset = $user->last_ticket_reset ? $user->last_ticket_reset->toDateString() : null;
 
-        if ($user->last_ticket_reset !== $today) {
-            $user->update([
-                'daily_tickets' => 3,
-                'last_ticket_reset' => $today,
-            ]);
-            $user->refresh();
+        if ($lastReset !== $today) {
+            $user->daily_tickets = 3;
+            $user->last_ticket_reset = $today;
+            $user->save();
         }
     }
 

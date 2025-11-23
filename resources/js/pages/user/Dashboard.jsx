@@ -184,7 +184,8 @@ const Dashboard = () => {
                                     onClick={handleClaimTicket}
                                     disabled={
                                         claimLoading ||
-                                        ticketBalance.daily_tickets >= 3
+                                        ticketBalance.daily_tickets <= 0 ||
+                                        ticketBalance.total_tickets >= 15
                                     }
                                     className="w-full bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
@@ -193,15 +194,24 @@ const Dashboard = () => {
                                         : "Claim Tiket"}
                                 </button>
 
-                                {ticketBalance.daily_tickets >= 3 && (
+                                {ticketBalance.daily_tickets <= 0 &&
+                                    ticketBalance.total_tickets < 15 && (
+                                        <p className="text-xs text-center text-gray-500 mt-2">
+                                            Limit harian tercapai. Coba lagi
+                                            besok.
+                                        </p>
+                                    )}
+
+                                {ticketBalance.total_tickets >= 15 && (
                                     <p className="text-xs text-center text-gray-500 mt-2">
-                                        Limit harian tercapai. Coba lagi besok.
+                                        Batas maksimal tiket tercapai (15
+                                        tiket).
                                     </p>
                                 )}
 
                                 <div className="border-t border-gray-200 pt-4 mt-4">
                                     <p className="text-xs text-gray-500 text-center">
-                                        Maksimal 3 tiket per hari dan 50 tiket
+                                        Maksimal 3 tiket per hari dan 15 tiket
                                         total per akun
                                     </p>
                                 </div>
