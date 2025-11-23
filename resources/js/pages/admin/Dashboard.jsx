@@ -13,6 +13,8 @@ const Dashboard = () => {
     });
     const [recentComplaints, setRecentComplaints] = useState([]);
     const [loading, setLoading] = useState(true);
+    const panduanLink =
+        "https://docs.google.com/document/d/YOUR_DOCUMENT_ID/edit";
 
     useEffect(() => {
         fetchDashboardData();
@@ -37,7 +39,10 @@ const Dashboard = () => {
             };
             setStats(statsData);
 
-            const recent = complaints.slice(0, 5);
+            const sortedComplaints = [...complaints].sort(
+                (a, b) => new Date(b.created_at) - new Date(a.created_at)
+            );
+            const recent = sortedComplaints.slice(0, 5);
             setRecentComplaints(recent);
         } catch (error) {
             console.error("Error fetching dashboard data:", error);
@@ -83,7 +88,7 @@ const Dashboard = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50">
+            <div className="min-h-screen bg-gray-50 flex flex-col">
                 <Navbar />
                 <div className="flex justify-center items-center py-20">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700"></div>
@@ -93,10 +98,9 @@ const Dashboard = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 flex flex-col">
             <Navbar />
-
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-800 mb-2">
                         Dashboard Admin
@@ -106,7 +110,6 @@ const Dashboard = () => {
                     </p>
                 </div>
 
-                {/* Statistics Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div className="bg-white rounded-xl shadow-md p-6 border-l-4 border-blue-500">
                         <div className="flex items-center justify-between">
@@ -221,12 +224,11 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* Quick Actions */}
                 <div className="bg-white rounded-xl shadow-md p-6 mb-8">
                     <h2 className="text-xl font-bold text-gray-800 mb-4">
                         Aksi Cepat
                     </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <button
                             onClick={() => navigate("/admin/kelola-keluhan")}
                             className="flex items-center justify-center gap-3 p-4 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"
@@ -251,7 +253,7 @@ const Dashboard = () => {
 
                         <button
                             onClick={() => navigate("/admin/kelola-pengguna")}
-                            className="flex items-center justify-center gap-3 p-4 border-2 border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition duration-200"
+                            className="flex items-center justify-center gap-3 p-4 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"
                         >
                             <svg
                                 className="w-6 h-6"
@@ -273,7 +275,7 @@ const Dashboard = () => {
 
                         <button
                             onClick={() => navigate("/admin/analisis-layanan")}
-                            className="flex items-center justify-center gap-3 p-4 border-2 border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition duration-200"
+                            className="flex items-center justify-center gap-3 p-4 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"
                         >
                             <svg
                                 className="w-6 h-6"
@@ -292,10 +294,33 @@ const Dashboard = () => {
                                 Lihat Feedback
                             </span>
                         </button>
+
+                        <a
+                            href={panduanLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-3 p-4 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"
+                        >
+                            <svg
+                                className="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                />
+                            </svg>
+                            <span className="font-semibold">
+                                Panduan Penggunaan
+                            </span>
+                        </a>
                     </div>
                 </div>
 
-                {/* Recent Complaints */}
                 <div className="bg-white rounded-xl shadow-md p-6">
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-xl font-bold text-gray-800">
@@ -386,6 +411,17 @@ const Dashboard = () => {
                     )}
                 </div>
             </div>
+
+            <footer className="bg-gradient-to-r from-primary-800 to-primary-900 text-white py-6 mt-auto">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center">
+                        <p className="text-sm">
+                            &copy; {new Date().getFullYear()} PT Citra
+                            Konsultama Indonesia. All rights reserved.
+                        </p>
+                    </div>
+                </div>
+            </footer>
         </div>
     );
 };

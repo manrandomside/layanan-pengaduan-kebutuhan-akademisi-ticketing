@@ -15,6 +15,10 @@ const Dashboard = () => {
         daily_tickets: 0,
     });
     const [message, setMessage] = useState({ type: "", text: "" });
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+    const panduanLink =
+        "https://docs.google.com/document/d/YOUR_DOCUMENT_ID/edit";
 
     useEffect(() => {
         fetchTicketBalance();
@@ -38,7 +42,7 @@ const Dashboard = () => {
             const response = await axiosInstance.get(
                 "/user/complaints/search",
                 {
-                    params: { limit: 20 },
+                    params: { limit: 1000 },
                 }
             );
             setRecentComplaints(response.data.data || []);
@@ -49,21 +53,16 @@ const Dashboard = () => {
 
     const handleSearch = async (e) => {
         e.preventDefault();
-
         if (!searchKeyword.trim()) {
             setSearchResults([]);
             return;
         }
-
         setLoading(true);
         try {
             const response = await axiosInstance.get(
                 "/user/complaints/search",
                 {
-                    params: {
-                        keyword: searchKeyword,
-                        limit: 10,
-                    },
+                    params: { keyword: searchKeyword, limit: 10 },
                 }
             );
             setSearchResults(response.data.data || []);
@@ -77,7 +76,6 @@ const Dashboard = () => {
     const handleClaimTicket = async () => {
         setClaimLoading(true);
         setMessage({ type: "", text: "" });
-
         try {
             const response = await axiosInstance.post("/user/tickets/claim");
             setMessage({
@@ -90,7 +88,6 @@ const Dashboard = () => {
                 error.response?.data?.message || "Gagal claim tiket";
             setMessage({ type: "error", text: errorMsg });
         }
-
         setClaimLoading(false);
     };
 
@@ -112,11 +109,121 @@ const Dashboard = () => {
         return badges[priority] || "bg-gray-100 text-gray-800";
     };
 
-    return (
-        <div className="min-h-screen bg-gray-50">
-            <Navbar />
+    const totalPages = Math.ceil(recentComplaints.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentComplaints = recentComplaints.slice(
+        indexOfFirstItem,
+        indexOfLastItem
+    );
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    const handlePageChange = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const renderPagination = () => {
+        if (totalPages <= 1) return null;
+        const pageNumbers = [];
+        const maxVisiblePages = 5;
+        let startPage = Math.max(
+            1,
+            currentPage - Math.floor(maxVisiblePages / 2)
+        );
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+        if (endPage - startPage < maxVisiblePages - 1) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+        for (let i = startPage; i <= endPage; i++) {
+            pageNumbers.push(i);
+        }
+
+        return (
+            <div className="flex items-center justify-center gap-2 mt-4">
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="px-3 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+                >
+                    <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 19l-7-7 7-7"
+                        />
+                    </svg>
+                </button>
+                {startPage > 1 && (
+                    <>
+                        <button
+                            onClick={() => handlePageChange(1)}
+                            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition duration-200"
+                        >
+                            1
+                        </button>
+                        {startPage > 2 && (
+                            <span className="px-2 text-gray-400">...</span>
+                        )}
+                    </>
+                )}
+                {pageNumbers.map((number) => (
+                    <button
+                        key={number}
+                        onClick={() => handlePageChange(number)}
+                        className={`px-4 py-2 rounded-lg border transition duration-200 ${
+                            currentPage === number
+                                ? "bg-primary-700 text-white border-primary-700"
+                                : "border-gray-300 text-gray-600 hover:bg-gray-50"
+                        }`}
+                    >
+                        {number}
+                    </button>
+                ))}
+                {endPage < totalPages && (
+                    <>
+                        {endPage < totalPages - 1 && (
+                            <span className="px-2 text-gray-400">...</span>
+                        )}
+                        <button
+                            onClick={() => handlePageChange(totalPages)}
+                            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition duration-200"
+                        >
+                            {totalPages}
+                        </button>
+                    </>
+                )}
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+                >
+                    <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                        />
+                    </svg>
+                </button>
+            </div>
+        );
+    };
+
+    return (
+        <div className="min-h-screen bg-gray-50 flex flex-col">
+            <Navbar />
+            <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-800 mb-2">
                         Dashboard
@@ -125,7 +232,6 @@ const Dashboard = () => {
                         Kelola tiket dan keluhan Anda dengan mudah
                     </p>
                 </div>
-
                 {message.text && (
                     <div
                         className={`mb-6 p-4 rounded-lg ${
@@ -137,10 +243,8 @@ const Dashboard = () => {
                         {message.text}
                     </div>
                 )}
-
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-                    {/* Claim Ticket Section */}
-                    <div className="lg:col-span-1">
+                    <div className="lg:col-span-1 flex flex-col gap-6">
                         <div className="bg-white rounded-xl shadow-md p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <h2 className="text-xl font-bold text-gray-800">
@@ -160,7 +264,6 @@ const Dashboard = () => {
                                     />
                                 </svg>
                             </div>
-
                             <div className="space-y-4">
                                 <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-4 border border-primary-200">
                                     <p className="text-sm text-gray-600 mb-1">
@@ -170,7 +273,6 @@ const Dashboard = () => {
                                         {ticketBalance.total_tickets}
                                     </p>
                                 </div>
-
                                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                                     <p className="text-sm text-gray-600 mb-1">
                                         Tiket Hari Ini
@@ -179,7 +281,6 @@ const Dashboard = () => {
                                         {ticketBalance.daily_tickets} / 3
                                     </p>
                                 </div>
-
                                 <button
                                     onClick={handleClaimTicket}
                                     disabled={
@@ -193,7 +294,6 @@ const Dashboard = () => {
                                         ? "Loading..."
                                         : "Claim Tiket"}
                                 </button>
-
                                 {ticketBalance.daily_tickets <= 0 &&
                                     ticketBalance.total_tickets < 15 && (
                                         <p className="text-xs text-center text-gray-500 mt-2">
@@ -201,14 +301,12 @@ const Dashboard = () => {
                                             besok.
                                         </p>
                                     )}
-
                                 {ticketBalance.total_tickets >= 15 && (
                                     <p className="text-xs text-center text-gray-500 mt-2">
                                         Batas maksimal tiket tercapai (15
                                         tiket).
                                     </p>
                                 )}
-
                                 <div className="border-t border-gray-200 pt-4 mt-4">
                                     <p className="text-xs text-gray-500 text-center">
                                         Maksimal 3 tiket per hari dan 15 tiket
@@ -217,16 +315,106 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         </div>
+                        <div className="bg-white rounded-xl shadow-md p-6 flex-1 flex flex-col">
+                            <h2 className="text-xl font-bold text-gray-800 mb-4">
+                                Aksi Cepat
+                            </h2>
+                            <div className="space-y-3 flex-1 flex flex-col justify-center">
+                                <button
+                                    onClick={() => navigate("/keluhan")}
+                                    className="w-full flex items-center justify-center gap-3 p-3 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"
+                                >
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M12 4v16m8-8H4"
+                                        />
+                                    </svg>
+                                    <span className="font-semibold">
+                                        Buat Keluhan Baru
+                                    </span>
+                                </button>
+                                <button
+                                    onClick={() => navigate("/keluhan/list")}
+                                    className="w-full flex items-center justify-center gap-3 p-3 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"
+                                >
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                                        />
+                                    </svg>
+                                    <span className="font-semibold">
+                                        Lihat Keluhan Saya
+                                    </span>
+                                </button>
+                                <button
+                                    onClick={() => navigate("/profile")}
+                                    className="w-full flex items-center justify-center gap-3 p-3 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"
+                                >
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                        />
+                                    </svg>
+                                    <span className="font-semibold">
+                                        Profile Settings
+                                    </span>
+                                </button>
+                                <div className="border-t border-gray-200 my-2"></div>
+                                <a
+                                    href={panduanLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full flex items-center justify-center gap-3 p-3 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"
+                                >
+                                    <svg
+                                        className="w-5 h-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                                        />
+                                    </svg>
+                                    <span className="font-semibold">
+                                        Panduan Penggunaan
+                                    </span>
+                                </a>
+                            </div>
+                        </div>
                     </div>
-
-                    {/* Search & History Section */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white rounded-xl shadow-md p-6">
+                        <div className="bg-white rounded-xl shadow-md p-6 h-full flex flex-col">
                             <h2 className="text-xl font-bold text-gray-800 mb-4">
                                 Cari Keluhan
                             </h2>
-
-                            {/* Search Bar */}
                             <form onSubmit={handleSearch} className="mb-6">
                                 <div className="flex gap-2">
                                     <input
@@ -281,8 +469,6 @@ const Dashboard = () => {
                                     </button>
                                 </div>
                             </form>
-
-                            {/* Search Results */}
                             {searchResults.length > 0 && (
                                 <div className="mb-6">
                                     <h3 className="text-lg font-semibold text-gray-800 mb-3">
@@ -340,20 +526,17 @@ const Dashboard = () => {
                                     </div>
                                 </div>
                             )}
-
-                            {/* Recent Complaints History */}
-                            <div>
+                            <div className="flex-1 flex flex-col">
                                 <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                                    Riwayat Keluhan (1 Bulan Terakhir)
+                                    Riwayat Keluhan
                                 </h3>
-                                <div className="space-y-3 max-h-96 overflow-y-auto">
-                                    {recentComplaints.length === 0 ? (
+                                <div className="space-y-3 flex-1">
+                                    {currentComplaints.length === 0 ? (
                                         <div className="text-center py-8 text-gray-500">
-                                            Belum ada keluhan dalam 1 bulan
-                                            terakhir
+                                            Belum ada keluhan yang diajukan
                                         </div>
                                     ) : (
-                                        recentComplaints.map((complaint) => (
+                                        currentComplaints.map((complaint) => (
                                             <div
                                                 key={complaint.complaint_id}
                                                 className="border border-gray-200 rounded-lg p-4 hover:border-primary-500 transition duration-200 cursor-pointer"
@@ -410,85 +593,22 @@ const Dashboard = () => {
                                         ))
                                     )}
                                 </div>
+                                {renderPagination()}
                             </div>
                         </div>
                     </div>
                 </div>
-
-                {/* Quick Actions */}
-                <div className="bg-white rounded-xl shadow-md p-6">
-                    <h2 className="text-xl font-bold text-gray-800 mb-4">
-                        Aksi Cepat
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <button
-                            onClick={() => navigate("/keluhan")}
-                            className="flex items-center justify-center gap-3 p-4 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"
-                        >
-                            <svg
-                                className="w-6 h-6"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 4v16m8-8H4"
-                                />
-                            </svg>
-                            <span className="font-semibold">
-                                Buat Keluhan Baru
-                            </span>
-                        </button>
-
-                        <button
-                            onClick={() => navigate("/keluhan/list")}
-                            className="flex items-center justify-center gap-3 p-4 border-2 border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition duration-200"
-                        >
-                            <svg
-                                className="w-6 h-6"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                                />
-                            </svg>
-                            <span className="font-semibold">
-                                Lihat Keluhan Saya
-                            </span>
-                        </button>
-
-                        <button
-                            onClick={() => navigate("/profile")}
-                            className="flex items-center justify-center gap-3 p-4 border-2 border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 transition duration-200"
-                        >
-                            <svg
-                                className="w-6 h-6"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                />
-                            </svg>
-                            <span className="font-semibold">
-                                Profile Settings
-                            </span>
-                        </button>
+            </div>
+            <footer className="bg-gradient-to-r from-primary-800 to-primary-900 text-white py-6 mt-auto">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center">
+                        <p className="text-sm">
+                            &copy; {new Date().getFullYear()} PT Citra
+                            Konsultama Indonesia. All rights reserved.
+                        </p>
                     </div>
                 </div>
-            </div>
+            </footer>
         </div>
     );
 };
