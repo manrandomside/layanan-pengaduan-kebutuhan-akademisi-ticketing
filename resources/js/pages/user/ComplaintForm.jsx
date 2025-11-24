@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Navbar from "../../Components/user/Navbar";
+import Footer from "../../Components/user/Footer";
 import axiosInstance from "../../config/axios";
 
 const ComplaintForm = () => {
@@ -403,6 +404,7 @@ const ComplaintForm = () => {
                     </form>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 };

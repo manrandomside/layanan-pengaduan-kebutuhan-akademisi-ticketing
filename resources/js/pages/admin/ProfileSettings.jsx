@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Navbar from "../../Components/admin/Navbar";
+import Footer from "../../Components/admin/Footer";
 import axiosInstance from "../../config/axios";
 
 const AdminProfileSettings = () => {
@@ -134,10 +135,10 @@ const AdminProfileSettings = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 flex flex-col">
             <Navbar />
 
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8">
                     <button
                         onClick={() => navigate("/admin/dashboard")}
@@ -486,6 +487,7 @@ const AdminProfileSettings = () => {
                     </div>
                 )}
             </div>
+            <Footer />
         </div>
     );
 };

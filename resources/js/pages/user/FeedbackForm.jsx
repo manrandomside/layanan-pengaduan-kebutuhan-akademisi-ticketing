@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../Components/user/Navbar";
+import Footer from "../../Components/user/Footer";
 import axiosInstance from "../../config/axios";
 
 const FeedbackForm = () => {
@@ -299,6 +300,7 @@ const FeedbackForm = () => {
                     </div>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 };

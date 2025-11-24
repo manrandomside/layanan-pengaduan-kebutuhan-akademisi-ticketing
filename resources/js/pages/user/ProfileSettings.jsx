@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import Navbar from "../../Components/user/Navbar";
+import Footer from "../../Components/user/Footer";
 import axiosInstance from "../../config/axios";
 
 const ProfileSettings = () => {
@@ -838,6 +839,7 @@ const ProfileSettings = () => {
                     )}
                 </div>
             </div>
+            <Footer />
         </div>
     );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/admin/Navbar";
+import Footer from "../../Components/admin/Footer";
 import axiosInstance from "../../config/axios";
 
 const KelolaPengguna = () => {
@@ -140,20 +141,21 @@ const KelolaPengguna = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50">
+            <div className="min-h-screen bg-gray-50 flex flex-col">
                 <Navbar />
-                <div className="flex justify-center items-center py-20">
+                <div className="flex-1 flex justify-center items-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700"></div>
                 </div>
+                <Footer />
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 flex flex-col">
             <Navbar />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8">
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <div>
@@ -635,6 +637,8 @@ const KelolaPengguna = () => {
                     </div>
                 </div>
             )}
+
+            <Footer />
         </div>
     );
 };

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../../Components/user/Navbar";
+import Footer from "../../Components/user/Footer";
 import axiosInstance from "../../config/axios";
 
 const ComplaintDetail = () => {
@@ -87,10 +88,10 @@ const ComplaintDetail = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-gray-50 flex flex-col">
             <Navbar />
 
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8">
                     <button
                         onClick={() => navigate("/keluhan/list")}
@@ -346,6 +347,7 @@ const ComplaintDetail = () => {
                     </div>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 };
