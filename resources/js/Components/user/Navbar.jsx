@@ -10,7 +10,7 @@ const Navbar = () => {
     const [showProfileDropdown, setShowProfileDropdown] = useState(false);
     const [showNotificationDropdown, setShowNotificationDropdown] =
         useState(false);
-    const [totalTickets, setTotalTickets] = useState(0);
+    const [totalTickets, setTotalTickets] = useState(user?.total_tickets || 0);
     const [unreadCount, setUnreadCount] = useState(0);
     const [notifications, setNotifications] = useState([]);
 
@@ -18,9 +18,14 @@ const Navbar = () => {
     const notificationDropdownRef = useRef(null);
 
     useEffect(() => {
-        fetchTicketBalance();
         fetchNotifications();
     }, []);
+
+    useEffect(() => {
+        if (user?.total_tickets !== undefined) {
+            setTotalTickets(user.total_tickets);
+        }
+    }, [user?.total_tickets]);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -42,15 +47,6 @@ const Navbar = () => {
         return () =>
             document.removeEventListener("mousedown", handleClickOutside);
     }, []);
-
-    const fetchTicketBalance = async () => {
-        try {
-            const response = await axiosInstance.get("/user/tickets/balance");
-            setTotalTickets(response.data.data?.total_tickets || 0);
-        } catch (error) {
-            console.error("Error fetching ticket balance:", error);
-        }
-    };
 
     const fetchNotifications = async () => {
         try {

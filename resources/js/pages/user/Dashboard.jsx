@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import Navbar from "../../Components/user/Navbar";
 import Footer from "../../Components/user/Footer";
 import axiosInstance from "../../config/axios";
 
 const Dashboard = () => {
     const navigate = useNavigate();
+    const { updateUser } = useAuth();
     const [searchKeyword, setSearchKeyword] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [recentComplaints, setRecentComplaints] = useState([]);
@@ -83,7 +85,17 @@ const Dashboard = () => {
                 type: "success",
                 text: response.data.message || "Berhasil claim tiket",
             });
+
+            // Update local state
             fetchTicketBalance();
+
+            // Update user data in AuthContext for navbar
+            if (response.data.data?.total_tickets !== undefined) {
+                updateUser({
+                    total_tickets: response.data.data.total_tickets,
+                    daily_tickets: response.data.data.daily_tickets,
+                });
+            }
         } catch (error) {
             const errorMsg =
                 error.response?.data?.message || "Gagal claim tiket";
@@ -385,6 +397,7 @@ const Dashboard = () => {
                                     </span>
                                 </button>
                                 <div className="border-t border-gray-200 my-2"></div>
+
                                 <a
                                     href={panduanLink}
                                     target="_blank"

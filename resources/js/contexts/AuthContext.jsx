@@ -178,6 +178,13 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // Update user data
+    const updateUser = (updatedUserData) => {
+        const newUserData = { ...user, ...updatedUserData };
+        setUser(newUserData);
+        localStorage.setItem("user_data", JSON.stringify(newUserData));
+    };
+
     const value = {
         isAuthenticated,
         user,
@@ -188,6 +195,7 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         checkAuth,
+        updateUser,
     };
 
     return (
