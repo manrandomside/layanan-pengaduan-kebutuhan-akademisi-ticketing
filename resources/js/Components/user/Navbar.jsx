@@ -60,7 +60,7 @@ const Navbar = () => {
             const unreadResponse = await axiosInstance.get(
                 "/user/notifications/unread-count"
             );
-            setUnreadCount(unreadResponse.data.unread_count || 0);
+            setUnreadCount(unreadResponse.data.data?.unread_count || 0);
         } catch (error) {
             console.error("Error fetching notifications:", error);
         }

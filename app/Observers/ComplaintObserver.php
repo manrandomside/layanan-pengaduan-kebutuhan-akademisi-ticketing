@@ -33,7 +33,7 @@ class ComplaintObserver
      */
     public function updated(Complaint $complaint): void
     {
-        if ($complaint->isDirty('status')) {
+        if ($complaint->wasChanged('status')) {
             $oldStatus = $complaint->getOriginal('status');
             $newStatus = $complaint->status;
 
