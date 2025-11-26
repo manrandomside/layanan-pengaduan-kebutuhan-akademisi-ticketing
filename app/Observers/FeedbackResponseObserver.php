@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\FeedbackResponse;
 use App\Models\Notification;
 use App\Models\Feedback;
+use App\Events\FeedbackReplied;
 
 class FeedbackResponseObserver
 {
@@ -16,6 +17,7 @@ class FeedbackResponseObserver
         $feedback = Feedback::find($feedbackResponse->feedback_id);
 
         if ($feedback) {
+            // Create notification for user
             Notification::create([
                 'user_id' => $feedback->user_id,
                 'type' => 'feedback_replied',
@@ -24,6 +26,9 @@ class FeedbackResponseObserver
                 'related_complaint_id' => $feedback->complaint_id,
                 'is_read' => 'unread',
             ]);
+
+            // Broadcast event to specific user
+            broadcast(new FeedbackReplied($feedbackResponse));
         }
     }
 

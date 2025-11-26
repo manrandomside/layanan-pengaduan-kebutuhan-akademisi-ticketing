@@ -6,6 +6,8 @@ use App\Models\Complaint;
 use App\Models\Notification;
 use App\Models\ComplaintStatusHistory;
 use App\Models\Admin;
+use App\Events\ComplaintSubmitted;
+use App\Events\ComplaintStatusChanged;
 
 class ComplaintObserver
 {
@@ -14,6 +16,7 @@ class ComplaintObserver
      */
     public function created(Complaint $complaint): void
     {
+        // Create notifications for all admins
         $admins = Admin::all();
 
         foreach ($admins as $admin) {
@@ -26,6 +29,9 @@ class ComplaintObserver
                 'is_read' => 'unread',
             ]);
         }
+
+        // Broadcast event to all admins
+        broadcast(new ComplaintSubmitted($complaint));
     }
 
     /**
@@ -37,6 +43,7 @@ class ComplaintObserver
             $oldStatus = $complaint->getOriginal('status');
             $newStatus = $complaint->status;
 
+            // Create notification for user
             Notification::create([
                 'user_id' => $complaint->user_id,
                 'type' => 'status_changed',
@@ -46,11 +53,15 @@ class ComplaintObserver
                 'is_read' => 'unread',
             ]);
 
+            // Save status history
             ComplaintStatusHistory::create([
                 'complaint_id' => $complaint->complaint_id,
                 'status_lama' => $oldStatus,
                 'status_baru' => $newStatus,
             ]);
+
+            // Broadcast event to specific user
+            broadcast(new ComplaintStatusChanged($complaint, $oldStatus, $newStatus));
         }
     }
 
