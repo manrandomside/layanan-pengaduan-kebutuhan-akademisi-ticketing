@@ -21,6 +21,47 @@ const Dashboard = () => {
         fetchDashboardData();
     }, []);
 
+    // Real-time dashboard updates
+    useEffect(() => {
+        const channel = window.Echo.channel("admin-channel");
+
+        channel.listen("ComplaintSubmitted", (event) => {
+            setStats((prev) => ({
+                total: prev.total + 1,
+                waiting: prev.waiting + 1,
+                on_progress: prev.on_progress,
+                done: prev.done,
+            }));
+
+            const newComplaint = {
+                complaint_id: event.complaint_id,
+                ticket_id: event.ticket_id,
+                nama_lengkap: event.nama_lengkap,
+                nim_nip: event.nim_nip,
+                priority: event.priority,
+                keluhan: event.keluhan,
+                status: "waiting",
+                status_user: event.status_user || "mahasiswa",
+                lab: event.lab || null,
+                ruangan: event.ruangan || null,
+                created_at: event.created_at,
+            };
+
+            setRecentComplaints((prev) => {
+                const updated = [newComplaint, ...prev];
+                const sorted = updated.sort(
+                    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+                );
+                return sorted.slice(0, 5);
+            });
+        });
+
+        return () => {
+            channel.stopListening("ComplaintSubmitted");
+            window.Echo.leaveChannel("admin-channel");
+        };
+    }, []);
+
     const fetchDashboardData = async () => {
         setLoading(true);
         try {

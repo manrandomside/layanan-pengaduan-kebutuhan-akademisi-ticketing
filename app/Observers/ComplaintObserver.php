@@ -11,12 +11,8 @@ use App\Events\ComplaintStatusChanged;
 
 class ComplaintObserver
 {
-    /**
-     * Handle the Complaint "created" event.
-     */
     public function created(Complaint $complaint): void
     {
-        // Create notifications for all admins
         $admins = Admin::all();
 
         foreach ($admins as $admin) {
@@ -30,62 +26,57 @@ class ComplaintObserver
             ]);
         }
 
-        // Broadcast event to all admins
         broadcast(new ComplaintSubmitted($complaint));
     }
 
-    /**
-     * Handle the Complaint "updated" event.
-     */
     public function updated(Complaint $complaint): void
     {
-        if ($complaint->wasChanged('status')) {
+        if ($complaint->isDirty('status')) {
             $oldStatus = $complaint->getOriginal('status');
             $newStatus = $complaint->status;
 
-            // Create notification for user
             Notification::create([
                 'user_id' => $complaint->user_id,
                 'type' => 'status_changed',
-                'title' => 'Status Keluhan Berubah',
-                'message' => "Status keluhan Anda berubah dari {$oldStatus} menjadi {$newStatus}",
+                'title' => 'Status Keluhan Diperbarui',
+                'message' => "Status keluhan [{$complaint->ticket_id}] telah diubah menjadi " . $this->getStatusText($newStatus),
                 'related_complaint_id' => $complaint->complaint_id,
                 'is_read' => 'unread',
             ]);
 
-            // Save status history
             ComplaintStatusHistory::create([
                 'complaint_id' => $complaint->complaint_id,
                 'status_lama' => $oldStatus,
                 'status_baru' => $newStatus,
             ]);
 
-            // Broadcast event to specific user
             broadcast(new ComplaintStatusChanged($complaint, $oldStatus, $newStatus));
         }
     }
 
-    /**
-     * Handle the Complaint "deleted" event.
-     */
     public function deleted(Complaint $complaint): void
     {
         //
     }
 
-    /**
-     * Handle the Complaint "restored" event.
-     */
     public function restored(Complaint $complaint): void
     {
         //
     }
 
-    /**
-     * Handle the Complaint "force deleted" event.
-     */
     public function forceDeleted(Complaint $complaint): void
     {
         //
+    }
+
+    private function getStatusText(string $status): string
+    {
+        $statusMap = [
+            'waiting' => 'Menunggu',
+            'on_progress' => 'Sedang Diproses',
+            'done' => 'Selesai',
+        ];
+
+        return $statusMap[$status] ?? $status;
     }
 }

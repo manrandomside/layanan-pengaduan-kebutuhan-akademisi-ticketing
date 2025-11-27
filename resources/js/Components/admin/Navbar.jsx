@@ -20,6 +20,31 @@ const Navbar = () => {
         fetchNotifications();
     }, []);
 
+    // Real-time notifications
+    useEffect(() => {
+        const channel = window.Echo.channel("admin-channel");
+
+        channel.listen("ComplaintSubmitted", (event) => {
+            const newNotification = {
+                notification_id: Date.now(),
+                type: "complaint_submitted",
+                title: "Keluhan Baru",
+                message: `Keluhan baru dari ${event.nama_lengkap} - Tiket: ${event.ticket_id}`,
+                related_complaint_id: event.complaint_id,
+                is_read: "unread",
+                created_at: event.created_at,
+            };
+
+            setNotifications((prev) => [newNotification, ...prev]);
+            setUnreadCount((prev) => prev + 1);
+        });
+
+        return () => {
+            channel.stopListening("ComplaintSubmitted");
+            window.Echo.leaveChannel("admin-channel");
+        };
+    }, []);
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (

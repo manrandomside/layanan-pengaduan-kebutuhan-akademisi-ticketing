@@ -20,6 +20,48 @@ const AnalisisLayanan = () => {
         fetchFeedbacks();
     }, []);
 
+    // Real-time feedback updates
+    useEffect(() => {
+        const channel = window.Echo.channel("admin-channel");
+
+        channel.listen("FeedbackSubmitted", (event) => {
+            const newFeedback = {
+                feedback_id: event.feedback_id,
+                complaint_id: event.complaint_id,
+                user_id: event.user_id,
+                rating: event.rating,
+                feedback_text: event.feedback_text,
+                created_at: event.created_at,
+                user: {
+                    nama_lengkap: event.user_name,
+                    nim_nip: event.user?.nim_nip || "-",
+                    status: event.user?.status || "-",
+                },
+                complaint: {
+                    ticket_id: event.ticket_id,
+                    keluhan: event.complaint?.keluhan || "-",
+                    kelas: event.complaint?.kelas || null,
+                    lab: event.complaint?.lab || null,
+                    ruangan: event.complaint?.ruangan || null,
+                },
+                responses: [],
+            };
+
+            setFeedbacks((prev) => {
+                const exists = prev.some(
+                    (f) => f.feedback_id === newFeedback.feedback_id
+                );
+                if (exists) return prev;
+                return [newFeedback, ...prev];
+            });
+        });
+
+        return () => {
+            channel.stopListening("FeedbackSubmitted");
+            window.Echo.leaveChannel("admin-channel");
+        };
+    }, []);
+
     useEffect(() => {
         filterFeedbacks();
     }, [ratingFilter, feedbacks]);

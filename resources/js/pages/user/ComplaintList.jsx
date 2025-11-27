@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import Navbar from "../../Components/user/Navbar";
 import Footer from "../../Components/user/Footer";
 import axiosInstance from "../../config/axios";
 
 const ComplaintList = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [complaints, setComplaints] = useState([]);
     const [filteredComplaints, setFilteredComplaints] = useState([]);
     const [statusFilter, setStatusFilter] = useState("all");
@@ -14,6 +16,28 @@ const ComplaintList = () => {
     useEffect(() => {
         fetchComplaints();
     }, []);
+
+    // Real-time status updates
+    useEffect(() => {
+        if (!user?.user_id) return;
+
+        const channel = window.Echo.private(`user.${user.user_id}`);
+
+        channel.listen("ComplaintStatusChanged", (event) => {
+            setComplaints((prev) =>
+                prev.map((complaint) =>
+                    complaint.complaint_id === event.complaint_id
+                        ? { ...complaint, status: event.new_status }
+                        : complaint
+                )
+            );
+        });
+
+        return () => {
+            channel.stopListening("ComplaintStatusChanged");
+            window.Echo.leave(`user.${user.user_id}`);
+        };
+    }, [user?.user_id]);
 
     useEffect(() => {
         filterComplaints();

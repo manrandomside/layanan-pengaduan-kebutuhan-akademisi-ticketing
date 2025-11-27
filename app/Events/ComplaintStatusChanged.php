@@ -3,13 +3,14 @@
 namespace App\Events;
 
 use App\Models\Complaint;
+use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ComplaintStatusChanged implements ShouldBroadcast
+class ComplaintStatusChanged implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -17,14 +18,13 @@ class ComplaintStatusChanged implements ShouldBroadcast
     public $oldStatus;
     public $newStatus;
 
-    public function __construct(Complaint $complaint, $oldStatus, $newStatus)
+    public function __construct(Complaint $complaint, string $oldStatus, string $newStatus)
     {
         $this->complaint = $complaint;
         $this->oldStatus = $oldStatus;
         $this->newStatus = $newStatus;
     }
 
-    // Broadcast to specific user private channel
     public function broadcastOn(): array
     {
         return [
@@ -32,7 +32,11 @@ class ComplaintStatusChanged implements ShouldBroadcast
         ];
     }
 
-    // Data to broadcast
+    public function broadcastAs(): string
+    {
+        return 'ComplaintStatusChanged';
+    }
+
     public function broadcastWith(): array
     {
         return [
@@ -40,9 +44,6 @@ class ComplaintStatusChanged implements ShouldBroadcast
             'ticket_id' => $this->complaint->ticket_id,
             'old_status' => $this->oldStatus,
             'new_status' => $this->newStatus,
-            'keluhan' => $this->complaint->keluhan,
-            'priority' => $this->complaint->priority,
-            'updated_at' => $this->complaint->updated_at->toISOString(),
         ];
     }
 }

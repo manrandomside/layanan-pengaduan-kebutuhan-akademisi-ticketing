@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 import Navbar from "../../Components/user/Navbar";
 import Footer from "../../Components/user/Footer";
 import axiosInstance from "../../config/axios";
@@ -7,12 +8,34 @@ import axiosInstance from "../../config/axios";
 const ComplaintDetail = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const { user } = useAuth();
     const [complaint, setComplaint] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchComplaintDetail();
     }, [id]);
+
+    // Real-time status updates
+    useEffect(() => {
+        if (!user?.user_id || !complaint) return;
+
+        const channel = window.Echo.private(`user.${user.user_id}`);
+
+        channel.listen("ComplaintStatusChanged", (event) => {
+            if (event.complaint_id === parseInt(id)) {
+                setComplaint((prev) => ({
+                    ...prev,
+                    status: event.new_status,
+                }));
+            }
+        });
+
+        return () => {
+            channel.stopListening("ComplaintStatusChanged");
+            window.Echo.leave(`user.${user.user_id}`);
+        };
+    }, [user?.user_id, complaint, id]);
 
     const fetchComplaintDetail = async () => {
         setLoading(true);

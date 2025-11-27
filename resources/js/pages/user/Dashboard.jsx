@@ -28,6 +28,39 @@ const Dashboard = () => {
         fetchRecentComplaints();
     }, []);
 
+    // Real-time updates for complaint submissions
+    useEffect(() => {
+        const channel = window.Echo.channel("admin-channel");
+
+        channel.listen("ComplaintSubmitted", (event) => {
+            const newComplaint = {
+                complaint_id: event.complaint_id,
+                ticket_id: event.ticket_id,
+                nama_lengkap: event.nama_lengkap,
+                nim_nip: event.nim_nip,
+                priority: event.priority,
+                keluhan: event.keluhan,
+                status: "waiting",
+                status_user: event.status_user || "mahasiswa",
+                lab: event.lab || null,
+                ruangan: event.ruangan || null,
+                created_at: event.created_at,
+            };
+
+            setRecentComplaints((prev) => {
+                const updated = [newComplaint, ...prev];
+                return updated.sort(
+                    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+                );
+            });
+        });
+
+        return () => {
+            channel.stopListening("ComplaintSubmitted");
+            window.Echo.leaveChannel("admin-channel");
+        };
+    }, []);
+
     const fetchTicketBalance = async () => {
         try {
             const response = await axiosInstance.get("/user/tickets/balance");
@@ -86,10 +119,8 @@ const Dashboard = () => {
                 text: response.data.message || "Berhasil claim tiket",
             });
 
-            // Update local state
             fetchTicketBalance();
 
-            // Update user data in AuthContext for navbar
             if (response.data.data?.total_tickets !== undefined) {
                 updateUser({
                     total_tickets: response.data.data.total_tickets,
@@ -397,7 +428,6 @@ const Dashboard = () => {
                                     </span>
                                 </button>
                                 <div className="border-t border-gray-200 my-2"></div>
-
                                 <a
                                     href={panduanLink}
                                     target="_blank"

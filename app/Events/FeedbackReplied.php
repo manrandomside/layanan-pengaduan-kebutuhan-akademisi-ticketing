@@ -5,11 +5,11 @@ namespace App\Events;
 use App\Models\FeedbackResponse;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class FeedbackReplied implements ShouldBroadcast
+class FeedbackReplied implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -17,10 +17,9 @@ class FeedbackReplied implements ShouldBroadcast
 
     public function __construct(FeedbackResponse $feedbackResponse)
     {
-        $this->feedbackResponse = $feedbackResponse->load('feedback.complaint');
+        $this->feedbackResponse = $feedbackResponse->load('feedback.complaint', 'admin');
     }
 
-    // Broadcast to specific user private channel
     public function broadcastOn(): array
     {
         return [
@@ -28,12 +27,18 @@ class FeedbackReplied implements ShouldBroadcast
         ];
     }
 
-    // Data to broadcast
+    public function broadcastAs(): string
+    {
+        return 'FeedbackReplied';
+    }
+
     public function broadcastWith(): array
     {
         return [
             'response_id' => $this->feedbackResponse->response_id,
             'feedback_id' => $this->feedbackResponse->feedback_id,
+            'complaint_id' => $this->feedbackResponse->feedback->complaint_id,
+            'ticket_id' => $this->feedbackResponse->feedback->complaint->ticket_id,
             'response_text' => $this->feedbackResponse->response_text,
             'admin_name' => $this->feedbackResponse->admin->nama ?? 'Admin',
             'created_at' => $this->feedbackResponse->created_at->toISOString(),

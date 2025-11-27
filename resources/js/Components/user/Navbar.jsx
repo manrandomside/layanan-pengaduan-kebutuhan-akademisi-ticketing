@@ -27,6 +27,50 @@ const Navbar = () => {
         }
     }, [user?.total_tickets]);
 
+    // Real-time notifications
+    useEffect(() => {
+        if (!user?.user_id) return;
+
+        const channel = window.Echo.private(`user.${user.user_id}`);
+
+        channel.listen("ComplaintStatusChanged", (event) => {
+            const newNotification = {
+                notification_id: Date.now(),
+                type: "status_changed",
+                title: "Status Keluhan Berubah",
+                message: `Status keluhan Anda berubah dari ${event.old_status} menjadi ${event.new_status}`,
+                related_complaint_id: event.complaint_id,
+                is_read: "unread",
+                created_at: new Date().toISOString(),
+            };
+
+            setNotifications((prev) => [newNotification, ...prev]);
+            setUnreadCount((prev) => prev + 1);
+        });
+
+        channel.listen("FeedbackReplied", (event) => {
+            const newNotification = {
+                notification_id: Date.now() + 1,
+                type: "feedback_replied",
+                title: "Admin Menanggapi Feedback Anda",
+                message:
+                    "Admin telah memberikan tanggapan terhadap feedback Anda",
+                related_complaint_id: null,
+                is_read: "unread",
+                created_at: new Date().toISOString(),
+            };
+
+            setNotifications((prev) => [newNotification, ...prev]);
+            setUnreadCount((prev) => prev + 1);
+        });
+
+        return () => {
+            channel.stopListening("ComplaintStatusChanged");
+            channel.stopListening("FeedbackReplied");
+            window.Echo.leave(`user.${user.user_id}`);
+        };
+    }, [user?.user_id]);
+
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (
