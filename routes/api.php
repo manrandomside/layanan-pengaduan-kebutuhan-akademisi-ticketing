@@ -10,6 +10,23 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\ProfileController;
 
+// Test broadcast endpoint for debugging
+Route::get('/test-broadcast', function () {
+    event(new \App\Events\ComplaintSubmitted([
+        'ticket_id' => 'T000001',
+        'complaint_id' => 1,
+        'nama_lengkap' => 'Test User',
+        'keluhan' => 'Test complaint for broadcasting',
+        'priority' => 'high',
+        'created_at' => now()
+    ]));
+    
+    return response()->json([
+        'message' => 'Test broadcast event dispatched',
+        'timestamp' => now()
+    ]);
+});
+
 /**
  * Public routes - No authentication required
  */

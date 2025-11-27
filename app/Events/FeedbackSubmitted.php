@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\Feedback;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -13,11 +12,25 @@ class FeedbackSubmitted implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $feedback;
+    public $feedbackId;
+    public $complaintId;
+    public $userId;
+    public $rating;
+    public $feedbackText;
+    public $userData;
+    public $complaintData;
+    public $createdAt;
 
-    public function __construct(Feedback $feedback)
+    public function __construct($feedbackId, $complaintId, $userId, $rating, $feedbackText, $userData, $complaintData, $createdAt)
     {
-        $this->feedback = $feedback->load('user', 'complaint');
+        $this->feedbackId = $feedbackId;
+        $this->complaintId = $complaintId;
+        $this->userId = $userId;
+        $this->rating = $rating;
+        $this->feedbackText = $feedbackText;
+        $this->userData = $userData;
+        $this->complaintData = $complaintData;
+        $this->createdAt = $createdAt;
     }
 
     public function broadcastOn(): array
@@ -35,26 +48,14 @@ class FeedbackSubmitted implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
-            'feedback_id' => $this->feedback->feedback_id,
-            'complaint_id' => $this->feedback->complaint_id,
-            'user_id' => $this->feedback->user_id,
-            'user_name' => $this->feedback->user->nama_lengkap ?? 'User',
-            'rating' => $this->feedback->rating,
-            'feedback_text' => $this->feedback->feedback_text,
-            'ticket_id' => $this->feedback->complaint->ticket_id ?? null,
-            'user' => [
-                'nama_lengkap' => $this->feedback->user->nama_lengkap ?? 'User',
-                'nim_nip' => $this->feedback->user->nim_nip ?? '-',
-                'status' => $this->feedback->user->status ?? '-',
-            ],
-            'complaint' => [
-                'ticket_id' => $this->feedback->complaint->ticket_id ?? '-',
-                'keluhan' => $this->feedback->complaint->keluhan ?? '-',
-                'kelas' => $this->feedback->complaint->kelas ?? null,
-                'lab' => $this->feedback->complaint->lab ?? null,
-                'ruangan' => $this->feedback->complaint->ruangan ?? null,
-            ],
-            'created_at' => $this->feedback->created_at->toISOString(),
+            'feedback_id' => $this->feedbackId,
+            'complaint_id' => $this->complaintId,
+            'user_id' => $this->userId,
+            'rating' => $this->rating,
+            'feedback_text' => $this->feedbackText,
+            'user' => $this->userData,
+            'complaint' => $this->complaintData,
+            'created_at' => $this->createdAt,
         ];
     }
 }

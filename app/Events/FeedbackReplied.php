@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\FeedbackResponse;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -13,17 +12,31 @@ class FeedbackReplied implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $feedbackResponse;
+    public $responseId;
+    public $feedbackId;
+    public $complaintId;
+    public $ticketId;
+    public $userId;
+    public $responseText;
+    public $adminName;
+    public $createdAt;
 
-    public function __construct(FeedbackResponse $feedbackResponse)
+    public function __construct($responseId, $feedbackId, $complaintId, $ticketId, $userId, $responseText, $adminName, $createdAt)
     {
-        $this->feedbackResponse = $feedbackResponse->load('feedback.complaint', 'admin');
+        $this->responseId = $responseId;
+        $this->feedbackId = $feedbackId;
+        $this->complaintId = $complaintId;
+        $this->ticketId = $ticketId;
+        $this->userId = $userId;
+        $this->responseText = $responseText;
+        $this->adminName = $adminName;
+        $this->createdAt = $createdAt;
     }
 
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('user.' . $this->feedbackResponse->feedback->complaint->user_id),
+            new PrivateChannel('user.' . $this->userId),
         ];
     }
 
@@ -35,13 +48,13 @@ class FeedbackReplied implements ShouldBroadcastNow
     public function broadcastWith(): array
     {
         return [
-            'response_id' => $this->feedbackResponse->response_id,
-            'feedback_id' => $this->feedbackResponse->feedback_id,
-            'complaint_id' => $this->feedbackResponse->feedback->complaint_id,
-            'ticket_id' => $this->feedbackResponse->feedback->complaint->ticket_id,
-            'response_text' => $this->feedbackResponse->response_text,
-            'admin_name' => $this->feedbackResponse->admin->nama ?? 'Admin',
-            'created_at' => $this->feedbackResponse->created_at->toISOString(),
+            'response_id' => $this->responseId,
+            'feedback_id' => $this->feedbackId,
+            'complaint_id' => $this->complaintId,
+            'ticket_id' => $this->ticketId,
+            'response_text' => $this->responseText,
+            'admin_name' => $this->adminName,
+            'created_at' => $this->createdAt,
         ];
     }
 }

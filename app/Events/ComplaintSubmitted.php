@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\Complaint;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -13,11 +12,11 @@ class ComplaintSubmitted implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $complaint;
+    public $complaintData;
 
-    public function __construct(Complaint $complaint)
+    public function __construct($complaintData)
     {
-        $this->complaint = $complaint->load('user');
+        $this->complaintData = $complaintData;
     }
 
     public function broadcastOn(): array
@@ -34,21 +33,22 @@ class ComplaintSubmitted implements ShouldBroadcastNow
 
     public function broadcastWith(): array
     {
-        return [
-            'complaint_id' => $this->complaint->complaint_id,
-            'ticket_id' => $this->complaint->ticket_id,
-            'user_id' => $this->complaint->user_id,
-            'nama_lengkap' => $this->complaint->nama_lengkap,
-            'nim_nip' => $this->complaint->nim_nip,
-            'email' => $this->complaint->email,
-            'no_telepon' => $this->complaint->no_telepon,
-            'priority' => $this->complaint->priority,
-            'keluhan' => $this->complaint->keluhan,
-            'status_user' => $this->complaint->status_user,
-            'kelas' => $this->complaint->kelas,
-            'lab' => $this->complaint->lab,
-            'ruangan' => $this->complaint->ruangan,
-            'created_at' => $this->complaint->created_at->toISOString(),
+        return is_array($this->complaintData) ? $this->complaintData : [
+            'complaint_id' => $this->complaintData->complaint_id,
+            'ticket_id' => $this->complaintData->ticket_id,
+            'user_id' => $this->complaintData->user_id,
+            'nama_lengkap' => $this->complaintData->nama_lengkap,
+            'nim_nip' => $this->complaintData->nim_nip,
+            'email' => $this->complaintData->email,
+            'no_telepon' => $this->complaintData->no_telepon,
+            'priority' => $this->complaintData->priority,
+            'keluhan' => $this->complaintData->keluhan,
+            'status_user' => $this->complaintData->status_user,
+            'kelas' => $this->complaintData->kelas,
+            'lab' => $this->complaintData->lab,
+            'ruangan' => $this->complaintData->ruangan,
+            'status' => $this->complaintData->status ?? 'waiting',
+            'created_at' => $this->complaintData->created_at ?? now()->toISOString(),
         ];
     }
 }

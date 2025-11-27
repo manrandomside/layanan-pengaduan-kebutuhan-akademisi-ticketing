@@ -23,6 +23,7 @@ class EventServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        // Register model observers
         Complaint::observe(ComplaintObserver::class);
         Feedback::observe(FeedbackObserver::class);
         FeedbackResponse::observe(FeedbackResponseObserver::class);
