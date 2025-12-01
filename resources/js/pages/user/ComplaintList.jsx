@@ -17,13 +17,13 @@ const ComplaintList = () => {
         fetchComplaints();
     }, []);
 
-    // Real-time status updates
+    // Subscribe to real-time status updates
     useEffect(() => {
         if (!user?.user_id) return;
 
         const channel = window.Echo.private(`user.${user.user_id}`);
 
-        channel.listen("ComplaintStatusChanged", (event) => {
+        channel.listen(".ComplaintStatusChanged", (event) => {
             setComplaints((prev) =>
                 prev.map((complaint) =>
                     complaint.complaint_id === event.complaint_id
@@ -34,7 +34,7 @@ const ComplaintList = () => {
         });
 
         return () => {
-            channel.stopListening("ComplaintStatusChanged");
+            channel.stopListening(".ComplaintStatusChanged");
             window.Echo.leave(`user.${user.user_id}`);
         };
     }, [user?.user_id]);

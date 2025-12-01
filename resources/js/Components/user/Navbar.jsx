@@ -27,18 +27,27 @@ const Navbar = () => {
         }
     }, [user?.total_tickets]);
 
-    // Real-time notifications
+    // Subscribe to real-time events
     useEffect(() => {
         if (!user?.user_id) return;
 
         const channel = window.Echo.private(`user.${user.user_id}`);
 
-        channel.listen("ComplaintStatusChanged", (event) => {
+        // Listen for complaint status changes
+        channel.listen(".ComplaintStatusChanged", (event) => {
+            const statusMap = {
+                waiting: "Menunggu",
+                on_progress: "Sedang Diproses",
+                done: "Selesai",
+            };
+
             const newNotification = {
-                notification_id: Date.now(),
+                notification_id: `status_${event.complaint_id}_${Date.now()}`,
                 type: "status_changed",
                 title: "Status Keluhan Berubah",
-                message: `Status keluhan Anda berubah dari ${event.old_status} menjadi ${event.new_status}`,
+                message: `Status keluhan [${event.ticket_id}] berubah dari ${
+                    statusMap[event.old_status] || event.old_status
+                } menjadi ${statusMap[event.new_status] || event.new_status}`,
                 related_complaint_id: event.complaint_id,
                 is_read: "unread",
                 created_at: new Date().toISOString(),
@@ -48,16 +57,16 @@ const Navbar = () => {
             setUnreadCount((prev) => prev + 1);
         });
 
-        channel.listen("FeedbackReplied", (event) => {
+        // Listen for feedback replies
+        channel.listen(".FeedbackReplied", (event) => {
             const newNotification = {
-                notification_id: Date.now() + 1,
+                notification_id: `feedback_${event.response_id}_${Date.now()}`,
                 type: "feedback_replied",
                 title: "Admin Menanggapi Feedback Anda",
-                message:
-                    "Admin telah memberikan tanggapan terhadap feedback Anda",
-                related_complaint_id: null,
+                message: `Admin ${event.admin_name} telah menanggapi feedback Anda pada keluhan [${event.ticket_id}]`,
+                related_complaint_id: event.complaint_id,
                 is_read: "unread",
-                created_at: new Date().toISOString(),
+                created_at: event.created_at,
             };
 
             setNotifications((prev) => [newNotification, ...prev]);
@@ -65,8 +74,8 @@ const Navbar = () => {
         });
 
         return () => {
-            channel.stopListening("ComplaintStatusChanged");
-            channel.stopListening("FeedbackReplied");
+            channel.stopListening(".ComplaintStatusChanged");
+            channel.stopListening(".FeedbackReplied");
             window.Echo.leave(`user.${user.user_id}`);
         };
     }, [user?.user_id]);

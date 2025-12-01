@@ -20,13 +20,15 @@ const Navbar = () => {
         fetchNotifications();
     }, []);
 
-    // Real-time notifications
+    // Subscribe to real-time complaint submissions
     useEffect(() => {
         const channel = window.Echo.channel("admin-channel");
 
-        channel.listen("ComplaintSubmitted", (event) => {
+        channel.listen(".ComplaintSubmitted", (event) => {
             const newNotification = {
-                notification_id: Date.now(),
+                notification_id: `complaint_${
+                    event.complaint_id
+                }_${Date.now()}`,
                 type: "complaint_submitted",
                 title: "Keluhan Baru",
                 message: `Keluhan baru dari ${event.nama_lengkap} - Tiket: ${event.ticket_id}`,
@@ -40,8 +42,8 @@ const Navbar = () => {
         });
 
         return () => {
-            channel.stopListening("ComplaintSubmitted");
-            window.Echo.leaveChannel("admin-channel");
+            channel.stopListening(".ComplaintSubmitted");
+            window.Echo.leave("admin-channel");
         };
     }, []);
 

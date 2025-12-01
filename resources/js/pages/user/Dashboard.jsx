@@ -28,11 +28,11 @@ const Dashboard = () => {
         fetchRecentComplaints();
     }, []);
 
-    // Real-time updates for complaint submissions
+    // Subscribe to real-time complaint submissions
     useEffect(() => {
         const channel = window.Echo.channel("admin-channel");
 
-        channel.listen("ComplaintSubmitted", (event) => {
+        channel.listen(".ComplaintSubmitted", (event) => {
             const newComplaint = {
                 complaint_id: event.complaint_id,
                 ticket_id: event.ticket_id,
@@ -40,8 +40,9 @@ const Dashboard = () => {
                 nim_nip: event.nim_nip,
                 priority: event.priority,
                 keluhan: event.keluhan,
-                status: "waiting",
+                status: event.status || "waiting",
                 status_user: event.status_user || "mahasiswa",
+                kelas: event.kelas || null,
                 lab: event.lab || null,
                 ruangan: event.ruangan || null,
                 created_at: event.created_at,
@@ -56,8 +57,8 @@ const Dashboard = () => {
         });
 
         return () => {
-            channel.stopListening("ComplaintSubmitted");
-            window.Echo.leaveChannel("admin-channel");
+            channel.stopListening(".ComplaintSubmitted");
+            window.Echo.leave("admin-channel");
         };
     }, []);
 
@@ -428,8 +429,9 @@ const Dashboard = () => {
                                     </span>
                                 </button>
                                 <div className="border-t border-gray-200 my-2"></div>
+
                                 <a
-                                    href={panduanLink}
+                                    href="https://drive.google.com/file/d/1sAhWXN7TXrp-pbPkhCEziD5c93hTUkVR/view?usp=sharing"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="w-full flex items-center justify-center gap-3 p-3 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"

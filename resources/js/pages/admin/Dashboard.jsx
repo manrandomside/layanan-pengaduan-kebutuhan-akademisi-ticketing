@@ -21,11 +21,11 @@ const Dashboard = () => {
         fetchDashboardData();
     }, []);
 
-    // Real-time dashboard updates
+    // Subscribe to real-time complaint submissions
     useEffect(() => {
         const channel = window.Echo.channel("admin-channel");
 
-        channel.listen("ComplaintSubmitted", (event) => {
+        channel.listen(".ComplaintSubmitted", (event) => {
             setStats((prev) => ({
                 total: prev.total + 1,
                 waiting: prev.waiting + 1,
@@ -40,8 +40,9 @@ const Dashboard = () => {
                 nim_nip: event.nim_nip,
                 priority: event.priority,
                 keluhan: event.keluhan,
-                status: "waiting",
+                status: event.status || "waiting",
                 status_user: event.status_user || "mahasiswa",
+                kelas: event.kelas || null,
                 lab: event.lab || null,
                 ruangan: event.ruangan || null,
                 created_at: event.created_at,
@@ -57,8 +58,8 @@ const Dashboard = () => {
         });
 
         return () => {
-            channel.stopListening("ComplaintSubmitted");
-            window.Echo.leaveChannel("admin-channel");
+            channel.stopListening(".ComplaintSubmitted");
+            window.Echo.leave("admin-channel");
         };
     }, []);
 
@@ -338,7 +339,7 @@ const Dashboard = () => {
                         </button>
 
                         <a
-                            href={panduanLink}
+                            href="https://drive.google.com/file/d/1VlSKxH50TP4-UpdjuWAA5uESckfwa4FW/view?usp=sharing"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center justify-center gap-3 p-4 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"

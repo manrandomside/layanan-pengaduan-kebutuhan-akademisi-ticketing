@@ -18,11 +18,11 @@ const KelolaKeluhan = () => {
         fetchComplaints();
     }, []);
 
-    // Real-time updates for complaints
+    // Subscribe to real-time complaint submissions
     useEffect(() => {
         const channel = window.Echo.channel("admin-channel");
 
-        channel.listen("ComplaintSubmitted", (event) => {
+        channel.listen(".ComplaintSubmitted", (event) => {
             const newComplaint = {
                 complaint_id: event.complaint_id,
                 ticket_id: event.ticket_id,
@@ -32,7 +32,7 @@ const KelolaKeluhan = () => {
                 no_telepon: event.no_telepon || "",
                 priority: event.priority,
                 keluhan: event.keluhan,
-                status: "waiting",
+                status: event.status || "waiting",
                 status_user: event.status_user || "mahasiswa",
                 kelas: event.kelas || null,
                 lab: event.lab || null,
@@ -50,8 +50,8 @@ const KelolaKeluhan = () => {
         });
 
         return () => {
-            channel.stopListening("ComplaintSubmitted");
-            window.Echo.leaveChannel("admin-channel");
+            channel.stopListening(".ComplaintSubmitted");
+            window.Echo.leave("admin-channel");
         };
     }, []);
 
