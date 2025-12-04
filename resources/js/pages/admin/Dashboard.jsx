@@ -21,10 +21,11 @@ const Dashboard = () => {
         fetchDashboardData();
     }, []);
 
-    // Subscribe to real-time complaint submissions
+    // Subscribe to real-time events from admin channel
     useEffect(() => {
         const channel = window.Echo.channel("admin-channel");
 
+        // Listen for new complaint submissions
         channel.listen(".ComplaintSubmitted", (event) => {
             setStats((prev) => ({
                 total: prev.total + 1,
@@ -57,8 +58,36 @@ const Dashboard = () => {
             });
         });
 
+        // Listen for complaint status changes
+        channel.listen(".ComplaintStatusChanged", (event) => {
+            setStats((prev) => ({
+                total: prev.total,
+                waiting:
+                    prev.waiting +
+                    (event.new_status === "waiting" ? 1 : 0) -
+                    (event.old_status === "waiting" ? 1 : 0),
+                on_progress:
+                    prev.on_progress +
+                    (event.new_status === "on_progress" ? 1 : 0) -
+                    (event.old_status === "on_progress" ? 1 : 0),
+                done:
+                    prev.done +
+                    (event.new_status === "done" ? 1 : 0) -
+                    (event.old_status === "done" ? 1 : 0),
+            }));
+
+            setRecentComplaints((prev) =>
+                prev.map((complaint) =>
+                    complaint.complaint_id === event.complaint_id
+                        ? { ...complaint, status: event.new_status }
+                        : complaint
+                )
+            );
+        });
+
         return () => {
             channel.stopListening(".ComplaintSubmitted");
+            channel.stopListening(".ComplaintStatusChanged");
             window.Echo.leave("admin-channel");
         };
     }, []);
@@ -338,10 +367,13 @@ const Dashboard = () => {
                             </span>
                         </button>
 
-                        <a
-                            href="https://drive.google.com/file/d/1VlSKxH50TP4-UpdjuWAA5uESckfwa4FW/view?usp=sharing"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                        <button
+                            onClick={() =>
+                                window.open(
+                                    "https://drive.google.com/file/d/1VlSKxH50TP4-UpdjuWAA5uESckfwa4FW/view?usp=sharing",
+                                    "_blank"
+                                )
+                            }
                             className="flex items-center justify-center gap-3 p-4 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"
                         >
                             <svg
@@ -360,7 +392,7 @@ const Dashboard = () => {
                             <span className="font-semibold">
                                 Panduan Penggunaan
                             </span>
-                        </a>
+                        </button>
                     </div>
                 </div>
 

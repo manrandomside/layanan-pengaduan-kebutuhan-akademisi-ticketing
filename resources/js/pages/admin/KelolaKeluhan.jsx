@@ -18,10 +18,11 @@ const KelolaKeluhan = () => {
         fetchComplaints();
     }, []);
 
-    // Subscribe to real-time complaint submissions
+    // Subscribe to real-time events from admin channel
     useEffect(() => {
         const channel = window.Echo.channel("admin-channel");
 
+        // Listen for new complaint submissions
         channel.listen(".ComplaintSubmitted", (event) => {
             const newComplaint = {
                 complaint_id: event.complaint_id,
@@ -49,8 +50,20 @@ const KelolaKeluhan = () => {
             });
         });
 
+        // Listen for complaint status changes from other admins
+        channel.listen(".ComplaintStatusChanged", (event) => {
+            setComplaints((prev) =>
+                prev.map((complaint) =>
+                    complaint.complaint_id === event.complaint_id
+                        ? { ...complaint, status: event.new_status }
+                        : complaint
+                )
+            );
+        });
+
         return () => {
             channel.stopListening(".ComplaintSubmitted");
+            channel.stopListening(".ComplaintStatusChanged");
             window.Echo.leave("admin-channel");
         };
     }, []);

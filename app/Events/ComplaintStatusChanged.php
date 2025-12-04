@@ -28,10 +28,12 @@ class ComplaintStatusChanged implements ShouldBroadcastNow
         $this->newStatus = $newStatus;
     }
 
+    // Broadcast to both user private channel and admin public channel
     public function broadcastOn(): array
     {
         return [
             new PrivateChannel('user.' . $this->userId),
+            new Channel('admin-channel'),
         ];
     }
 

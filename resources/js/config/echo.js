@@ -3,9 +3,8 @@ import Pusher from "pusher-js";
 
 window.Pusher = Pusher;
 
-// Function to get authorization header dynamically
 const getAuthHeaders = () => {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("auth_token");
     return {
         Authorization: token ? `Bearer ${token}` : "",
         Accept: "application/json",

@@ -24,6 +24,8 @@ const ComplaintList = () => {
         const channel = window.Echo.private(`user.${user.user_id}`);
 
         channel.listen(".ComplaintStatusChanged", (event) => {
+            console.log("ComplaintStatusChanged received:", event);
+
             setComplaints((prev) =>
                 prev.map((complaint) =>
                     complaint.complaint_id === event.complaint_id
@@ -165,7 +167,6 @@ const ComplaintList = () => {
                     </div>
                 </div>
 
-                {/* Filter Tabs */}
                 <div className="bg-white rounded-xl shadow-md p-2 mb-6">
                     <div className="flex flex-wrap gap-2">
                         <button
@@ -211,7 +212,6 @@ const ComplaintList = () => {
                     </div>
                 </div>
 
-                {/* Complaints List */}
                 {loading ? (
                     <div className="flex justify-center items-center py-12">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700"></div>
