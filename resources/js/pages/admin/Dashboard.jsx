@@ -46,6 +46,7 @@ const Dashboard = () => {
                 kelas: event.kelas || null,
                 lab: event.lab || null,
                 ruangan: event.ruangan || null,
+                is_hidden: event.is_hidden || "visible",
                 created_at: event.created_at,
             };
 
@@ -85,9 +86,21 @@ const Dashboard = () => {
             );
         });
 
+        // Listen for complaint hide/unhide actions
+        channel.listen(".ComplaintHidden", (event) => {
+            setRecentComplaints((prev) =>
+                prev.map((complaint) =>
+                    complaint.complaint_id === event.complaint_id
+                        ? { ...complaint, is_hidden: event.is_hidden }
+                        : complaint
+                )
+            );
+        });
+
         return () => {
             channel.stopListening(".ComplaintSubmitted");
             channel.stopListening(".ComplaintStatusChanged");
+            channel.stopListening(".ComplaintHidden");
             window.Echo.leave("admin-channel");
         };
     }, []);
@@ -447,6 +460,12 @@ const Dashboard = () => {
                                                         complaint.priority
                                                     )}
                                                 </span>
+                                                {complaint.is_hidden ===
+                                                    "hidden" && (
+                                                    <span className="px-3 py-1 rounded-full text-xs font-medium border bg-gray-100 text-gray-600 border-gray-300">
+                                                        Hidden
+                                                    </span>
+                                                )}
                                             </div>
                                             <p className="font-medium text-gray-800 mb-1">
                                                 {complaint.keluhan}

@@ -8,6 +8,7 @@ use App\Models\ComplaintStatusHistory;
 use App\Models\Admin;
 use App\Events\ComplaintSubmitted;
 use App\Events\ComplaintStatusChanged;
+use App\Events\ComplaintHidden;
 use Illuminate\Support\Facades\Log;
 
 class ComplaintObserver
@@ -57,6 +58,7 @@ class ComplaintObserver
 
     public function updated(Complaint $complaint): void
     {
+        // Handle status change
         if ($complaint->isDirty('status')) {
             $oldStatus = $complaint->getOriginal('status');
             $newStatus = $complaint->status;
@@ -94,6 +96,27 @@ class ComplaintObserver
                 ]);
             } catch (\Exception $e) {
                 Log::error('Failed to broadcast ComplaintStatusChanged', ['error' => $e->getMessage()]);
+            }
+        }
+
+        // Handle is_hidden change
+        if ($complaint->isDirty('is_hidden')) {
+            $newIsHidden = $complaint->is_hidden;
+
+            // Broadcast event to admin channel and user channel
+            try {
+                event(new ComplaintHidden(
+                    $complaint->complaint_id,
+                    $complaint->ticket_id,
+                    $complaint->user_id,
+                    $newIsHidden
+                ));
+                Log::info('ComplaintHidden event dispatched', [
+                    'complaint_id' => $complaint->complaint_id,
+                    'is_hidden' => $newIsHidden
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to broadcast ComplaintHidden', ['error' => $e->getMessage()]);
             }
         }
     }

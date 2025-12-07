@@ -38,6 +38,7 @@ const KelolaKeluhan = () => {
                 kelas: event.kelas || null,
                 lab: event.lab || null,
                 ruangan: event.ruangan || null,
+                is_hidden: event.is_hidden || "visible",
                 created_at: event.created_at,
             };
 
@@ -61,9 +62,21 @@ const KelolaKeluhan = () => {
             );
         });
 
+        // Listen for complaint hide/unhide actions
+        channel.listen(".ComplaintHidden", (event) => {
+            setComplaints((prev) =>
+                prev.map((complaint) =>
+                    complaint.complaint_id === event.complaint_id
+                        ? { ...complaint, is_hidden: event.is_hidden }
+                        : complaint
+                )
+            );
+        });
+
         return () => {
             channel.stopListening(".ComplaintSubmitted");
             channel.stopListening(".ComplaintStatusChanged");
+            channel.stopListening(".ComplaintHidden");
             window.Echo.leave("admin-channel");
         };
     }, []);
@@ -114,6 +127,47 @@ const KelolaKeluhan = () => {
         } catch (error) {
             const errorMsg =
                 error.response?.data?.message || "Gagal memperbarui status";
+            setMessage({ type: "error", text: errorMsg });
+            setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+        }
+    };
+
+    // Toggle hide/unhide complaint
+    const handleToggleHide = async (complaintId, currentIsHidden) => {
+        const newIsHidden =
+            currentIsHidden === "visible" ? "hidden" : "visible";
+
+        try {
+            const response = await axiosInstance.put(
+                `/admin/complaints/${complaintId}/hide`,
+                {
+                    is_hidden: newIsHidden,
+                }
+            );
+
+            setComplaints((prev) =>
+                prev.map((complaint) =>
+                    complaint.complaint_id === complaintId
+                        ? { ...complaint, is_hidden: newIsHidden }
+                        : complaint
+                )
+            );
+
+            setMessage({
+                type: "success",
+                text:
+                    response.data.message ||
+                    `Keluhan berhasil ${
+                        newIsHidden === "hidden"
+                            ? "disembunyikan"
+                            : "ditampilkan"
+                    }`,
+            });
+            setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+        } catch (error) {
+            const errorMsg =
+                error.response?.data?.message ||
+                "Gagal mengubah visibility keluhan";
             setMessage({ type: "error", text: errorMsg });
             setTimeout(() => setMessage({ type: "", text: "" }), 3000);
         }
@@ -579,7 +633,11 @@ const KelolaKeluhan = () => {
                         {filteredComplaints.map((complaint) => (
                             <div
                                 key={complaint.complaint_id}
-                                className="bg-white rounded-xl shadow-md p-6 border-2 border-transparent hover:border-primary-500 transition duration-200"
+                                className={`bg-white rounded-xl shadow-md p-6 border-2 border-transparent hover:border-primary-500 transition duration-200 ${
+                                    complaint.is_hidden === "hidden"
+                                        ? "opacity-60"
+                                        : ""
+                                }`}
                             >
                                 <div className="flex items-start gap-4">
                                     <input
@@ -619,6 +677,12 @@ const KelolaKeluhan = () => {
                                                     complaint.priority
                                                 )}
                                             </span>
+                                            {complaint.is_hidden ===
+                                                "hidden" && (
+                                                <span className="px-3 py-1 rounded-full text-xs font-medium border bg-gray-100 text-gray-600 border-gray-300">
+                                                    Hidden
+                                                </span>
+                                            )}
                                         </div>
 
                                         <h3 className="text-lg font-semibold text-gray-800 mb-2">
@@ -693,6 +757,65 @@ const KelolaKeluhan = () => {
                                     </div>
 
                                     <div className="flex flex-col gap-2">
+                                        <button
+                                            onClick={() =>
+                                                handleToggleHide(
+                                                    complaint.complaint_id,
+                                                    complaint.is_hidden ||
+                                                        "visible"
+                                                )
+                                            }
+                                            className="px-3 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition duration-200 text-sm font-medium flex items-center gap-2"
+                                            title={
+                                                complaint.is_hidden === "hidden"
+                                                    ? "Tampilkan keluhan"
+                                                    : "Sembunyikan keluhan"
+                                            }
+                                        >
+                                            {complaint.is_hidden ===
+                                            "hidden" ? (
+                                                <>
+                                                    <svg
+                                                        className="w-4 h-4"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                                                        />
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                                                        />
+                                                    </svg>
+                                                    Show
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <svg
+                                                        className="w-4 h-4"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                                                        />
+                                                    </svg>
+                                                    Hide
+                                                </>
+                                            )}
+                                        </button>
+
                                         {complaint.status === "waiting" && (
                                             <button
                                                 onClick={() =>

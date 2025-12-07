@@ -119,12 +119,14 @@ class ComplaintController extends Controller
         ], 200);
     }
 
+    // Search complaint history for user dashboard (only visible complaints)
     public function searchComplaintHistory(Request $request)
     {
         $keyword = $request->query('keyword');
         $limit = $request->query('limit', 20);
 
         $query = Complaint::query()
+            ->where('is_hidden', 'visible')
             ->where('created_at', '>=', now()->subMonth())
             ->orderBy('created_at', 'desc');
 
@@ -145,6 +147,7 @@ class ComplaintController extends Controller
         ], 200);
     }
 
+    // Get all complaints for admin (show all including hidden)
     public function getAllComplaints(Request $request)
     {
         $status = $request->query('status');
@@ -200,6 +203,41 @@ class ComplaintController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Complaint status updated successfully',
+            'data' => $complaint
+        ], 200);
+    }
+
+    // Toggle hide/unhide complaint (admin only)
+    public function toggleHideComplaint(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'is_hidden' => 'required|in:visible,hidden',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $complaint = Complaint::find($id);
+
+        if (!$complaint) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Complaint not found'
+            ], 404);
+        }
+
+        $complaint->update([
+            'is_hidden' => $request->is_hidden,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Complaint visibility updated successfully',
             'data' => $complaint
         ], 200);
     }

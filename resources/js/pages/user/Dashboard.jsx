@@ -7,7 +7,7 @@ import axiosInstance from "../../config/axios";
 
 const Dashboard = () => {
     const navigate = useNavigate();
-    const { updateUser } = useAuth();
+    const { user, updateUser } = useAuth();
     const [searchKeyword, setSearchKeyword] = useState("");
     const [searchResults, setSearchResults] = useState([]);
     const [recentComplaints, setRecentComplaints] = useState([]);
@@ -28,10 +28,11 @@ const Dashboard = () => {
         fetchRecentComplaints();
     }, []);
 
-    // Subscribe to real-time complaint submissions
+    // Subscribe to real-time complaint submissions and hide/unhide events
     useEffect(() => {
         const channel = window.Echo.channel("admin-channel");
 
+        // Listen for new complaint submissions
         channel.listen(".ComplaintSubmitted", (event) => {
             const newComplaint = {
                 complaint_id: event.complaint_id,
@@ -45,19 +46,38 @@ const Dashboard = () => {
                 kelas: event.kelas || null,
                 lab: event.lab || null,
                 ruangan: event.ruangan || null,
+                is_hidden: event.is_hidden || "visible",
                 created_at: event.created_at,
             };
 
-            setRecentComplaints((prev) => {
-                const updated = [newComplaint, ...prev];
-                return updated.sort(
-                    (a, b) => new Date(b.created_at) - new Date(a.created_at)
+            // Only add if not hidden
+            if (newComplaint.is_hidden === "visible") {
+                setRecentComplaints((prev) => {
+                    const updated = [newComplaint, ...prev];
+                    return updated.sort(
+                        (a, b) =>
+                            new Date(b.created_at) - new Date(a.created_at)
+                    );
+                });
+            }
+        });
+
+        // Listen for complaint hide/unhide actions
+        channel.listen(".ComplaintHidden", (event) => {
+            if (event.is_hidden === "hidden") {
+                // Remove from list when hidden
+                setRecentComplaints((prev) =>
+                    prev.filter((c) => c.complaint_id !== event.complaint_id)
                 );
-            });
+            } else if (event.is_hidden === "visible") {
+                // Refresh list when unhidden
+                fetchRecentComplaints();
+            }
         });
 
         return () => {
             channel.stopListening(".ComplaintSubmitted");
+            channel.stopListening(".ComplaintHidden");
             window.Echo.leave("admin-channel");
         };
     }, []);
@@ -429,7 +449,6 @@ const Dashboard = () => {
                                     </span>
                                 </button>
                                 <div className="border-t border-gray-200 my-2"></div>
-
                                 <a
                                     href="https://drive.google.com/file/d/1sAhWXN7TXrp-pbPkhCEziD5c93hTUkVR/view?usp=sharing"
                                     target="_blank"

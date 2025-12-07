@@ -3,6 +3,7 @@ import Pusher from "pusher-js";
 
 window.Pusher = Pusher;
 
+// Get authentication token
 const getAuthHeaders = () => {
     const token = localStorage.getItem("auth_token");
     return {
@@ -11,20 +12,21 @@ const getAuthHeaders = () => {
     };
 };
 
+// Initialize Echo with Pusher
 const echo = new Echo({
     broadcaster: "pusher",
     key: import.meta.env.VITE_PUSHER_APP_KEY || "83b58f1184a5699c4e63",
     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || "ap1",
     forceTLS: true,
     encrypted: true,
-    authEndpoint: "/api/broadcasting/auth",
+    authEndpoint: "http://localhost:8000/api/broadcasting/auth",
     auth: {
         headers: getAuthHeaders(),
     },
     authorizer: (channel) => {
         return {
             authorize: (socketId, callback) => {
-                fetch("/api/broadcasting/auth", {
+                fetch("http://localhost:8000/api/broadcasting/auth", {
                     method: "POST",
                     headers: {
                         ...getAuthHeaders(),
@@ -45,11 +47,25 @@ const echo = new Echo({
                         callback(null, data);
                     })
                     .catch((error) => {
+                        console.error("Channel authorization error:", error);
                         callback(error, null);
                     });
             },
         };
     },
+});
+
+// Connection status monitoring
+echo.connector.pusher.connection.bind("connected", () => {
+    console.log("Pusher connected successfully!");
+});
+
+echo.connector.pusher.connection.bind("error", (err) => {
+    console.error("Pusher connection error:", err);
+});
+
+echo.connector.pusher.connection.bind("disconnected", () => {
+    console.warn("Pusher disconnected");
 });
 
 export default echo;

@@ -94,6 +94,7 @@ Route::middleware(['auth:sanctum'])->prefix('admin')->group(function () {
         Route::get('/', [ComplaintController::class, 'getAllComplaints']);
         Route::get('/{id}', [ComplaintController::class, 'getComplaintDetail']);
         Route::put('/{id}/status', [ComplaintController::class, 'updateComplaintStatus']);
+        Route::put('/{id}/hide', [ComplaintController::class, 'toggleHideComplaint']);
     });
     
     Route::prefix('feedbacks')->group(function () {
