@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
 use App\Models\Ticket;
+use App\Events\ComplaintHidden;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class ComplaintController extends Controller
 {
@@ -207,7 +209,7 @@ class ComplaintController extends Controller
         ], 200);
     }
 
-    // Toggle hide/unhide complaint (admin only)
+    // Toggle hide/unhide complaint (admin only) with real-time broadcast
     public function toggleHideComplaint(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -231,14 +233,37 @@ class ComplaintController extends Controller
             ], 404);
         }
 
-        $complaint->update([
-            'is_hidden' => $request->is_hidden,
-        ]);
+        $oldIsHidden = $complaint->is_hidden;
+        $newIsHidden = $request->is_hidden;
+
+        // Only process if value actually changed
+        if ($oldIsHidden !== $newIsHidden) {
+            $complaint->is_hidden = $newIsHidden;
+            $complaint->save();
+
+            // Dispatch ComplaintHidden event for real-time broadcast
+            try {
+                event(new ComplaintHidden(
+                    $complaint->complaint_id,
+                    $complaint->ticket_id,
+                    $complaint->user_id,
+                    $newIsHidden
+                ));
+                Log::info('ComplaintHidden event dispatched from Controller', [
+                    'complaint_id' => $complaint->complaint_id,
+                    'is_hidden' => $newIsHidden
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Failed to broadcast ComplaintHidden from Controller', [
+                    'error' => $e->getMessage()
+                ]);
+            }
+        }
 
         return response()->json([
             'success' => true,
             'message' => 'Complaint visibility updated successfully',
-            'data' => $complaint
+            'data' => $complaint->fresh()
         ], 200);
     }
 }

@@ -434,7 +434,11 @@ const Dashboard = () => {
                                     onClick={() =>
                                         navigate("/admin/kelola-keluhan")
                                     }
-                                    className="border border-gray-200 rounded-lg p-4 hover:border-primary-500 transition duration-200 cursor-pointer"
+                                    className={`border border-gray-200 rounded-lg p-4 hover:border-primary-500 transition duration-200 cursor-pointer ${
+                                        complaint.is_hidden === "hidden"
+                                            ? "opacity-60"
+                                            : ""
+                                    }`}
                                 >
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="flex-1">
@@ -463,7 +467,8 @@ const Dashboard = () => {
                                                 {complaint.is_hidden ===
                                                     "hidden" && (
                                                     <span className="px-3 py-1 rounded-full text-xs font-medium border bg-gray-100 text-gray-600 border-gray-300">
-                                                        Hidden
+                                                        Keluhan ini
+                                                        Disembunyikan
                                                     </span>
                                                 )}
                                             </div>

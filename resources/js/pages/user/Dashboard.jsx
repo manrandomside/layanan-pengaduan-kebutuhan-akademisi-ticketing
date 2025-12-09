@@ -174,6 +174,26 @@ const Dashboard = () => {
         return badges[priority] || "bg-gray-100 text-gray-800";
     };
 
+    // Konversi status ke bahasa Indonesia
+    const getStatusText = (status) => {
+        const statusText = {
+            waiting: "Menunggu",
+            on_progress: "Sedang Diproses",
+            done: "Selesai",
+        };
+        return statusText[status] || status;
+    };
+
+    // Konversi priority ke bahasa Indonesia
+    const getPriorityText = (priority) => {
+        const priorityText = {
+            low: "Rendah",
+            middle: "Sedang",
+            high: "Tinggi",
+        };
+        return priorityText[priority] || priority;
+    };
+
     const totalPages = Math.ceil(recentComplaints.length / itemsPerPage);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -563,14 +583,18 @@ const Dashboard = () => {
                                                                 complaint.status
                                                             )}`}
                                                         >
-                                                            {complaint.status}
+                                                            {getStatusText(
+                                                                complaint.status
+                                                            )}
                                                         </span>
                                                         <span
                                                             className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityBadge(
                                                                 complaint.priority
                                                             )}`}
                                                         >
-                                                            {complaint.priority}
+                                                            {getPriorityText(
+                                                                complaint.priority
+                                                            )}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -629,14 +653,18 @@ const Dashboard = () => {
                                                                 complaint.status
                                                             )}`}
                                                         >
-                                                            {complaint.status}
+                                                            {getStatusText(
+                                                                complaint.status
+                                                            )}
                                                         </span>
                                                         <span
                                                             className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityBadge(
                                                                 complaint.priority
                                                             )}`}
                                                         >
-                                                            {complaint.priority}
+                                                            {getPriorityText(
+                                                                complaint.priority
+                                                            )}
                                                         </span>
                                                     </div>
                                                 </div>
