@@ -149,20 +149,37 @@ class ComplaintController extends Controller
         ], 200);
     }
 
-    // Get all complaints for admin (show all including hidden)
+    // Get all complaints for admin with search, status filter, and priority filter
     public function getAllComplaints(Request $request)
     {
         $status = $request->query('status');
         $priority = $request->query('priority');
+        $search = $request->query('search');
 
         $query = Complaint::query();
 
+        // Filter by status
         if ($status && in_array($status, ['waiting', 'on_progress', 'done'])) {
             $query->where('status', $status);
         }
 
+        // Filter by priority
         if ($priority && in_array($priority, ['low', 'middle', 'high'])) {
             $query->where('priority', $priority);
+        }
+
+        // Search across multiple fields
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('ticket_id', 'like', "%{$search}%")
+                  ->orWhere('keluhan', 'like', "%{$search}%")
+                  ->orWhere('nama_lengkap', 'like', "%{$search}%")
+                  ->orWhere('nim_nip', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('lab', 'like', "%{$search}%")
+                  ->orWhere('ruangan', 'like', "%{$search}%")
+                  ->orWhere('kelas', 'like', "%{$search}%");
+            });
         }
 
         $complaints = $query->orderBy('created_at', 'desc')

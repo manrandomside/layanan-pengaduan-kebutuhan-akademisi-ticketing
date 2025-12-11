@@ -10,22 +10,34 @@ use Illuminate\Support\Facades\Validator;
 
 class UserManagementController extends Controller
 {
-    /**
-     * Get all users for admin
-     */
+    // Get all users for admin with search, filter, and pagination
     public function getAllUsers(Request $request)
     {
         $status = $request->query('status');
         $isActive = $request->query('is_active');
+        $search = $request->query('search');
+        $perPage = $request->query('per_page', 20);
 
         $query = User::query();
 
+        // Filter by status (dosen, asdos, staff, mahasiswa)
         if ($status && in_array($status, ['dosen', 'asdos', 'staff', 'mahasiswa'])) {
             $query->where('status', $status);
         }
 
+        // Filter by is_active (active, inactive)
         if ($isActive && in_array($isActive, ['active', 'inactive'])) {
             $query->where('is_active', $isActive);
+        }
+
+        // Search across multiple fields
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%")
+                  ->orWhere('nim_nip', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('no_telepon', 'like', "%{$search}%");
+            });
         }
 
         $users = $query->orderBy('created_at', 'desc')
@@ -42,17 +54,23 @@ class UserManagementController extends Controller
                 'created_at',
                 'updated_at'
             ])
-            ->get();
+            ->paginate($perPage);
 
         return response()->json([
             'success' => true,
-            'data' => $users
+            'data' => $users->items(),
+            'meta' => [
+                'current_page' => $users->currentPage(),
+                'last_page' => $users->lastPage(),
+                'per_page' => $users->perPage(),
+                'total' => $users->total(),
+                'from' => $users->firstItem(),
+                'to' => $users->lastItem(),
+            ]
         ], 200);
     }
 
-    /**
-     * Get user detail
-     */
+    // Get user detail
     public function getUserDetail(Request $request, $id)
     {
         $user = User::select([
@@ -84,9 +102,7 @@ class UserManagementController extends Controller
         ], 200);
     }
 
-    /**
-     * Create new user by admin
-     */
+    // Create new user by admin
     public function createUser(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -126,9 +142,7 @@ class UserManagementController extends Controller
         ], 201);
     }
 
-    /**
-     * Deactivate user account
-     */
+    // Deactivate user account
     public function deactivateUser(Request $request, $id)
     {
         $user = User::find($id);
@@ -158,9 +172,7 @@ class UserManagementController extends Controller
         ], 200);
     }
 
-    /**
-     * Activate user account
-     */
+    // Activate user account
     public function activateUser(Request $request, $id)
     {
         $user = User::find($id);

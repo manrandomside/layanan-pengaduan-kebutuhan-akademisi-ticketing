@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../../Components/admin/Navbar";
 import Footer from "../../Components/admin/Footer";
@@ -10,13 +10,53 @@ const KelolaKeluhan = () => {
     const [filteredComplaints, setFilteredComplaints] = useState([]);
     const [statusFilter, setStatusFilter] = useState("all");
     const [priorityFilter, setPriorityFilter] = useState("all");
+    const [searchKeyword, setSearchKeyword] = useState("");
     const [selectedComplaints, setSelectedComplaints] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [initialLoading, setInitialLoading] = useState(true);
+    const [searchLoading, setSearchLoading] = useState(false);
     const [message, setMessage] = useState({ type: "", text: "" });
 
+    // Fetch complaints from API with search parameter
+    const fetchComplaints = useCallback(
+        async (search = "", isInitial = false) => {
+            if (isInitial) {
+                setInitialLoading(true);
+            } else {
+                setSearchLoading(true);
+            }
+
+            try {
+                const params = {};
+                if (search) {
+                    params.search = search;
+                }
+                const response = await axiosInstance.get("/admin/complaints", {
+                    params,
+                });
+                setComplaints(response.data.data || []);
+            } catch (error) {
+                console.error("Error fetching complaints:", error);
+            }
+
+            setInitialLoading(false);
+            setSearchLoading(false);
+        },
+        []
+    );
+
+    // Initial load
     useEffect(() => {
-        fetchComplaints();
+        fetchComplaints("", true);
     }, []);
+
+    // Debounce search - fetch dari API setelah user berhenti mengetik
+    useEffect(() => {
+        const debounceTimer = setTimeout(() => {
+            fetchComplaints(searchKeyword, false);
+        }, 800);
+
+        return () => clearTimeout(debounceTimer);
+    }, [searchKeyword]);
 
     // Subscribe to real-time events from admin channel
     useEffect(() => {
@@ -81,20 +121,10 @@ const KelolaKeluhan = () => {
         };
     }, []);
 
+    // Filter complaints by status and priority (client-side filtering)
     useEffect(() => {
         filterComplaints();
     }, [statusFilter, priorityFilter, complaints]);
-
-    const fetchComplaints = async () => {
-        setLoading(true);
-        try {
-            const response = await axiosInstance.get("/admin/complaints");
-            setComplaints(response.data.data || []);
-        } catch (error) {
-            console.error("Error fetching complaints:", error);
-        }
-        setLoading(false);
-    };
 
     const filterComplaints = () => {
         let filtered = complaints;
@@ -122,7 +152,7 @@ const KelolaKeluhan = () => {
                 type: "success",
                 text: response.data.message || "Status berhasil diperbarui",
             });
-            fetchComplaints();
+            fetchComplaints(searchKeyword, false);
             setTimeout(() => setMessage({ type: "", text: "" }), 3000);
         } catch (error) {
             const errorMsg =
@@ -191,6 +221,11 @@ const KelolaKeluhan = () => {
                 filteredComplaints.map((c) => c.complaint_id)
             );
         }
+    };
+
+    // Clear search input
+    const handleClearSearch = () => {
+        setSearchKeyword("");
     };
 
     const handleExportPDF = () => {
@@ -441,7 +476,8 @@ const KelolaKeluhan = () => {
         return complaints.filter((c) => c.status === status).length;
     };
 
-    if (loading) {
+    // Full page loading hanya untuk initial load
+    if (initialLoading) {
         return (
             <div className="min-h-screen bg-gray-50 flex flex-col">
                 <Navbar />
@@ -478,6 +514,59 @@ const KelolaKeluhan = () => {
                         {message.text}
                     </div>
                 )}
+
+                {/* Search Bar */}
+                <div className="bg-white rounded-xl shadow-md p-4 mb-6">
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg
+                                className="h-5 w-5 text-gray-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                />
+                            </svg>
+                        </div>
+                        <input
+                            type="text"
+                            value={searchKeyword}
+                            onChange={(e) => setSearchKeyword(e.target.value)}
+                            placeholder="Cari berdasarkan ticket ID, nama, NIM/NIP, email, keluhan, lab, ruangan, kelas..."
+                            className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 placeholder-gray-500"
+                        />
+                        {searchKeyword && (
+                            <button
+                                onClick={handleClearSearch}
+                                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                            >
+                                <svg
+                                    className="h-5 w-5 text-gray-400 hover:text-gray-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M6 18L18 6M6 6l12 12"
+                                    />
+                                </svg>
+                            </button>
+                        )}
+                    </div>
+                    {searchKeyword && (
+                        <p className="mt-2 text-sm text-gray-500">
+                            Menampilkan hasil pencarian untuk "{searchKeyword}"
+                        </p>
+                    )}
+                </div>
 
                 {/* Filters */}
                 <div className="bg-white rounded-xl shadow-md p-4 mb-6">
@@ -585,7 +674,7 @@ const KelolaKeluhan = () => {
                 </div>
 
                 {/* Select All */}
-                {filteredComplaints.length > 0 && (
+                {filteredComplaints.length > 0 && !searchLoading && (
                     <div className="bg-white rounded-xl shadow-md p-4 mb-4">
                         <label className="flex items-center cursor-pointer">
                             <input
@@ -605,8 +694,13 @@ const KelolaKeluhan = () => {
                     </div>
                 )}
 
-                {/* Complaints List */}
-                {filteredComplaints.length === 0 ? (
+                {/* Complaints List Area */}
+                {searchLoading ? (
+                    <div className="bg-white rounded-xl shadow-md p-12 text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700 mx-auto mb-4"></div>
+                        <p className="text-gray-600">Mencari keluhan...</p>
+                    </div>
+                ) : filteredComplaints.length === 0 ? (
                     <div className="bg-white rounded-xl shadow-md p-12 text-center">
                         <svg
                             className="w-16 h-16 text-gray-400 mx-auto mb-4"
@@ -625,7 +719,9 @@ const KelolaKeluhan = () => {
                             Tidak ada keluhan
                         </h3>
                         <p className="text-gray-600">
-                            Belum ada keluhan dengan filter yang dipilih
+                            {searchKeyword
+                                ? `Tidak ditemukan keluhan dengan kata kunci "${searchKeyword}"`
+                                : "Belum ada keluhan dengan filter yang dipilih"}
                         </p>
                     </div>
                 ) : (
