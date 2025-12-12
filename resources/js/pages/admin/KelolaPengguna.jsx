@@ -38,6 +38,11 @@ const KelolaPengguna = () => {
     const [createLoading, setCreateLoading] = useState(false);
     const [createErrors, setCreateErrors] = useState({});
 
+    // Deactivate confirmation modal state
+    const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+    const [userToDeactivate, setUserToDeactivate] = useState(null);
+    const [deactivateLoading, setDeactivateLoading] = useState(false);
+
     // Fetch users from API with search, filter, and pagination
     const fetchUsers = useCallback(
         async (isInitial = false) => {
@@ -115,17 +120,88 @@ const KelolaPengguna = () => {
         fetchUsers(false);
     }, [statusFilter, activeFilter]);
 
-    const handleDeactivateUser = async (userId) => {
-        if (!confirm("Apakah Anda yakin ingin menonaktifkan user ini?")) return;
+    // Subscribe to real-time user registration events
+    useEffect(() => {
+        const channel = window.Echo.channel("admin-channel");
+
+        channel.listen(".UserRegistered", (event) => {
+            const newUser = {
+                user_id: event.user_id,
+                nama_lengkap: event.nama_lengkap,
+                nim_nip: event.nim_nip,
+                email: event.email,
+                no_telepon: event.no_telepon,
+                status: event.status,
+                is_active: event.is_active,
+                total_tickets: event.total_tickets,
+                daily_tickets: event.daily_tickets,
+                created_at: event.created_at,
+            };
+
+            // Add new user to the list if on first page and no active filters/search
+            setUsers((prev) => {
+                const exists = prev.some((u) => u.user_id === newUser.user_id);
+                if (exists) return prev;
+
+                // Only add to list if viewing all users on first page
+                if (
+                    currentPage === 1 &&
+                    statusFilter === "all" &&
+                    activeFilter === "all" &&
+                    !searchKeyword
+                ) {
+                    return [newUser, ...prev];
+                }
+                return prev;
+            });
+
+            // Update pagination total
+            setPaginationMeta((prev) => ({
+                ...prev,
+                total: prev.total + 1,
+            }));
+
+            // Show notification message
+            setMessage({
+                type: "success",
+                text: `User baru "${event.nama_lengkap}" telah terdaftar`,
+            });
+            setTimeout(() => setMessage({ type: "", text: "" }), 3000);
+        });
+
+        return () => {
+            channel.stopListening(".UserRegistered");
+            window.Echo.leave("admin-channel");
+        };
+    }, [currentPage, statusFilter, activeFilter, searchKeyword]);
+
+    // Open deactivate confirmation modal
+    const openDeactivateModal = (user) => {
+        setUserToDeactivate(user);
+        setShowDeactivateModal(true);
+    };
+
+    // Close deactivate confirmation modal
+    const closeDeactivateModal = () => {
+        setShowDeactivateModal(false);
+        setUserToDeactivate(null);
+    };
+
+    // Handle deactivate user with modal confirmation
+    const handleDeactivateUser = async () => {
+        if (!userToDeactivate) return;
+
+        setDeactivateLoading(true);
 
         try {
             const response = await axiosInstance.put(
-                `/admin/users/${userId}/deactivate`
+                `/admin/users/${userToDeactivate.user_id}/deactivate`
             );
             setMessage({
                 type: "success",
                 text: response.data.message || "User berhasil dinonaktifkan",
             });
+            closeDeactivateModal();
             fetchUsers(false);
             setTimeout(() => setMessage({ type: "", text: "" }), 3000);
         } catch (error) {
@@ -134,6 +210,8 @@ const KelolaPengguna = () => {
             setMessage({ type: "error", text: errorMsg });
             setTimeout(() => setMessage({ type: "", text: "" }), 3000);
         }
+
+        setDeactivateLoading(false);
     };
 
     const handleActivateUser = async (userId) => {
@@ -541,8 +619,8 @@ const KelolaPengguna = () => {
                                                     "active" ? (
                                                         <button
                                                             onClick={() =>
-                                                                handleDeactivateUser(
-                                                                    user.user_id
+                                                                openDeactivateModal(
+                                                                    user
                                                                 )
                                                             }
                                                             className="text-red-600 hover:text-red-900"
@@ -672,6 +750,67 @@ const KelolaPengguna = () => {
                     </>
                 )}
             </div>
+
+            {/* Deactivate User Confirmation Modal */}
+            {showDeactivateModal && userToDeactivate && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-xl max-w-md w-full">
+                        <div className="p-6">
+                            <div className="flex justify-center mb-4">
+                                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                                    <svg
+                                        className="w-8 h-8 text-red-600"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                        />
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <h2 className="text-xl font-bold text-gray-800 text-center mb-2">
+                                Konfirmasi Nonaktifkan User
+                            </h2>
+
+                            <p className="text-gray-600 text-center mb-6">
+                                Apakah Anda yakin ingin menonaktifkan{" "}
+                                <span className="font-semibold text-gray-800">
+                                    {userToDeactivate.nama_lengkap}
+                                </span>
+                                ? User yang dinonaktifkan tidak akan dapat login
+                                ke sistem.
+                            </p>
+
+                            <div className="flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={closeDeactivateModal}
+                                    disabled={deactivateLoading}
+                                    className="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={handleDeactivateUser}
+                                    disabled={deactivateLoading}
+                                    className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {deactivateLoading
+                                        ? "Memproses..."
+                                        : "Ya, Nonaktifkan"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Create User Modal */}
             {showCreateModal && (
