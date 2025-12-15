@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Admin;
 use App\Models\EmailVerification;
+use App\Mail\VerificationTokenMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class ProfileController extends Controller
@@ -110,7 +112,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Request email update with verification
+     * Request email update - Token dikirim ke EMAIL BARU
      */
     public function requestEmailUpdate(Request $request)
     {
@@ -128,7 +130,14 @@ class ProfileController extends Controller
             ], 422);
         }
 
-        $token = Str::random(60);
+        // Generate 6 digit token
+        $token = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        // Delete pending verifications sebelumnya untuk user ini
+        EmailVerification::where('user_id', $user->user_id)
+            ->where('type', 'email')
+            ->where('is_verified', 'pending')
+            ->delete();
 
         EmailVerification::create([
             'user_id' => $user->user_id,
@@ -139,13 +148,21 @@ class ProfileController extends Controller
             'expires_at' => now()->addHours(24),
         ]);
 
+        // Kirim email ke EMAIL BARU
+        try {
+            Mail::to($request->new_email)->send(
+                new VerificationTokenMail($user->nama_lengkap, $token, 'email')
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim email verifikasi. Silakan coba lagi.'
+            ], 500);
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'Verification email sent. Please check your new email.',
-            'data' => [
-                'token' => $token,
-                'expires_at' => now()->addHours(24),
-            ]
+            'message' => 'Token verifikasi telah dikirim ke email baru Anda.',
         ], 200);
     }
 
@@ -175,7 +192,7 @@ class ProfileController extends Controller
         if (!$verification) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid or expired verification token'
+                'message' => 'Token tidak valid atau sudah kadaluarsa'
             ], 400);
         }
 
@@ -191,13 +208,13 @@ class ProfileController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Email updated successfully',
+            'message' => 'Email berhasil diperbarui',
             'data' => $user
         ], 200);
     }
 
     /**
-     * Request phone number update with verification
+     * Request phone update - Token dikirim ke EMAIL LAMA (email saat ini)
      */
     public function requestPhoneUpdate(Request $request)
     {
@@ -215,7 +232,14 @@ class ProfileController extends Controller
             ], 422);
         }
 
-        $token = Str::random(60);
+        // Generate 6 digit token
+        $token = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        // Delete pending verifications sebelumnya untuk user ini
+        EmailVerification::where('user_id', $user->user_id)
+            ->where('type', 'phone')
+            ->where('is_verified', 'pending')
+            ->delete();
 
         EmailVerification::create([
             'user_id' => $user->user_id,
@@ -226,13 +250,21 @@ class ProfileController extends Controller
             'expires_at' => now()->addHours(24),
         ]);
 
+        // Kirim email ke EMAIL LAMA (email saat ini)
+        try {
+            Mail::to($user->email)->send(
+                new VerificationTokenMail($user->nama_lengkap, $token, 'phone')
+            );
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim email verifikasi. Silakan coba lagi.'
+            ], 500);
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'Verification code sent. Please verify your new phone number.',
-            'data' => [
-                'token' => $token,
-                'expires_at' => now()->addHours(24),
-            ]
+            'message' => 'Token verifikasi telah dikirim ke email Anda.',
         ], 200);
     }
 
@@ -262,7 +294,7 @@ class ProfileController extends Controller
         if (!$verification) {
             return response()->json([
                 'success' => false,
-                'message' => 'Invalid or expired verification token'
+                'message' => 'Token tidak valid atau sudah kadaluarsa'
             ], 400);
         }
 
@@ -278,7 +310,7 @@ class ProfileController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Phone number updated successfully',
+            'message' => 'Nomor telepon berhasil diperbarui',
             'data' => $user
         ], 200);
     }

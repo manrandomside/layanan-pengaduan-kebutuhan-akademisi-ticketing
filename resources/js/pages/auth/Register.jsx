@@ -52,7 +52,7 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-primary-50 px-4 py-8">
+        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-white to-primary-50 px-4 py-8">
             <div className="w-full max-w-2xl">
                 <div className="bg-white rounded-2xl shadow-xl p-8">
                     <div className="text-center mb-8">
@@ -131,21 +131,37 @@ const Register = () => {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
-                                <label
-                                    htmlFor="email"
-                                    className="block text-sm font-medium text-gray-700 mb-2"
-                                >
-                                    Email
-                                </label>
+                        {/* Email Field - Full Width dengan Warning */}
+                        <div>
+                            <label
+                                htmlFor="email"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
+                                Email
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <svg
+                                        className="w-5 h-5 text-gray-400"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                                        />
+                                    </svg>
+                                </div>
                                 <input
                                     type="email"
                                     id="email"
                                     name="email"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border ${
+                                    className={`w-full pl-12 pr-4 py-3 border ${
                                         errors.email
                                             ? "border-red-500"
                                             : "border-gray-300"
@@ -153,40 +169,71 @@ const Register = () => {
                                     placeholder="contoh@email.com"
                                     disabled={loading}
                                 />
-                                {errors.email && (
-                                    <p className="text-red-500 text-xs mt-1">
-                                        {errors.email[0]}
-                                    </p>
-                                )}
                             </div>
+                            {errors.email && (
+                                <p className="text-red-500 text-xs mt-1">
+                                    {errors.email[0]}
+                                </p>
+                            )}
+                            {/* Email Warning Box */}
+                            <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                                <div className="flex items-start gap-2">
+                                    <svg
+                                        className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                                        />
+                                    </svg>
+                                    <div>
+                                        <p className="text-amber-800 text-sm font-medium">
+                                            Pastikan email Anda benar!
+                                        </p>
+                                        <p className="text-amber-700 text-xs mt-1">
+                                            Email ini akan digunakan untuk
+                                            verifikasi saat mengubah data akun
+                                            seperti email dan nomor telepon.
+                                            Pastikan Anda memiliki akses ke
+                                            email ini.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                            <div>
-                                <label
-                                    htmlFor="no_telepon"
-                                    className="block text-sm font-medium text-gray-700 mb-2"
-                                >
-                                    No Telepon
-                                </label>
-                                <input
-                                    type="text"
-                                    id="no_telepon"
-                                    name="no_telepon"
-                                    value={formData.no_telepon}
-                                    onChange={handleChange}
-                                    className={`w-full px-4 py-3 border ${
-                                        errors.no_telepon
-                                            ? "border-red-500"
-                                            : "border-gray-300"
-                                    } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200`}
-                                    placeholder="08xxxxxxxxxx"
-                                    disabled={loading}
-                                />
-                                {errors.no_telepon && (
-                                    <p className="text-red-500 text-xs mt-1">
-                                        {errors.no_telepon[0]}
-                                    </p>
-                                )}
-                            </div>
+                        {/* No Telepon Field */}
+                        <div>
+                            <label
+                                htmlFor="no_telepon"
+                                className="block text-sm font-medium text-gray-700 mb-2"
+                            >
+                                No Telepon
+                            </label>
+                            <input
+                                type="text"
+                                id="no_telepon"
+                                name="no_telepon"
+                                value={formData.no_telepon}
+                                onChange={handleChange}
+                                className={`w-full px-4 py-3 border ${
+                                    errors.no_telepon
+                                        ? "border-red-500"
+                                        : "border-gray-300"
+                                } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200`}
+                                placeholder="08xxxxxxxxxx"
+                                disabled={loading}
+                            />
+                            {errors.no_telepon && (
+                                <p className="text-red-500 text-xs mt-1">
+                                    {errors.no_telepon[0]}
+                                </p>
+                            )}
                         </div>
 
                         <div>
