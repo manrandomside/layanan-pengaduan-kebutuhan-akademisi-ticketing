@@ -9,8 +9,11 @@ use Illuminate\Support\Facades\Log;
 
 class FeedbackResponseObserver
 {
+    // Handle feedback response created event
     public function created(FeedbackResponse $feedbackResponse): void
     {
+        // Refresh model to get latest data including timestamps
+        $feedbackResponse->refresh();
         $feedbackResponse->load('feedback.complaint', 'admin');
 
         if ($feedbackResponse->feedback && $feedbackResponse->feedback->complaint) {
@@ -26,6 +29,11 @@ class FeedbackResponseObserver
 
             // Broadcast event to user channel
             try {
+                // Use null-safe operator for created_at
+                $createdAt = $feedbackResponse->created_at 
+                    ? $feedbackResponse->created_at->toISOString() 
+                    : now()->toISOString();
+
                 event(new FeedbackReplied(
                     $feedbackResponse->response_id,
                     $feedbackResponse->feedback_id,
@@ -34,7 +42,7 @@ class FeedbackResponseObserver
                     $feedbackResponse->feedback->complaint->user_id,
                     $feedbackResponse->response_text,
                     $feedbackResponse->admin->nama ?? 'Admin',
-                    $feedbackResponse->created_at->toISOString()
+                    $createdAt
                 ));
 
                 Log::info('FeedbackReplied event dispatched', ['response_id' => $feedbackResponse->response_id]);

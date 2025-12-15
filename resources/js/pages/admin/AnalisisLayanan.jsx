@@ -20,11 +20,14 @@ const AnalisisLayanan = () => {
         fetchFeedbacks();
     }, []);
 
-    // Real-time feedback updates
+    // Real-time feedback updates via Pusher
     useEffect(() => {
         const channel = window.Echo.channel("admin-channel");
 
-        channel.listen("FeedbackSubmitted", (event) => {
+        // Listen for new feedback submitted by user
+        channel.listen(".FeedbackSubmitted", (event) => {
+            console.log("FeedbackSubmitted received:", event);
+
             const newFeedback = {
                 feedback_id: event.feedback_id,
                 complaint_id: event.complaint_id,
@@ -57,7 +60,7 @@ const AnalisisLayanan = () => {
         });
 
         return () => {
-            channel.stopListening("FeedbackSubmitted");
+            channel.stopListening(".FeedbackSubmitted");
             window.Echo.leaveChannel("admin-channel");
         };
     }, []);
@@ -89,6 +92,7 @@ const AnalisisLayanan = () => {
         setFilteredFeedbacks(filtered);
     };
 
+    // Handle reply feedback and update UI directly
     const handleReplyFeedback = async (e) => {
         e.preventDefault();
         if (!replyText.trim()) {
@@ -106,6 +110,31 @@ const AnalisisLayanan = () => {
                 }
             );
 
+            // Update feedbacks state directly with new response
+            const newResponse = response.data.data;
+            setFeedbacks((prev) =>
+                prev.map((feedback) => {
+                    if (feedback.feedback_id === selectedFeedback.feedback_id) {
+                        return {
+                            ...feedback,
+                            responses: [
+                                ...(feedback.responses || []),
+                                {
+                                    response_id: newResponse.response_id,
+                                    response_text: newResponse.response_text,
+                                    created_at: newResponse.created_at,
+                                    admin: {
+                                        nama:
+                                            newResponse.admin?.nama || "Admin",
+                                    },
+                                },
+                            ],
+                        };
+                    }
+                    return feedback;
+                })
+            );
+
             setMessage({
                 type: "success",
                 text:
@@ -116,7 +145,6 @@ const AnalisisLayanan = () => {
             setShowReplyModal(false);
             setReplyText("");
             setSelectedFeedback(null);
-            fetchFeedbacks();
         } catch (error) {
             const errorMsg =
                 error.response?.data?.message || "Gagal mengirim response";
@@ -293,7 +321,7 @@ const AnalisisLayanan = () => {
                                 {/* Feedback Header */}
                                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 pb-4 border-b border-gray-200">
                                     <div className="flex items-start gap-4 mb-4 md:mb-0">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-primary-700 to-primary-800 rounded-full flex items-center justify-center flex-shrink-0">
+                                        <div className="w-12 h-12 bg-linear-to-br from-primary-700 to-primary-800 rounded-full flex items-center justify-center flex-shrink-0">
                                             <span className="text-white font-bold text-lg">
                                                 {feedback.user?.nama_lengkap
                                                     ?.charAt(0)
@@ -546,7 +574,7 @@ const AnalisisLayanan = () => {
                             {/* Feedback Info */}
                             <div className="bg-gray-50 rounded-lg p-4 mb-6">
                                 <div className="flex items-center gap-3 mb-3">
-                                    <div className="w-10 h-10 bg-gradient-to-br from-primary-700 to-primary-800 rounded-full flex items-center justify-center">
+                                    <div className="w-10 h-10 bg-linear-to-br from-primary-700 to-primary-800 rounded-full flex items-center justify-center">
                                         <span className="text-white font-bold">
                                             {selectedFeedback.user?.nama_lengkap
                                                 ?.charAt(0)

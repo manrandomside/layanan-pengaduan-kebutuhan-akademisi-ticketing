@@ -14,6 +14,7 @@ const FeedbackForm = () => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
+    const [showSuccessModal, setShowSuccessModal] = useState(false);
 
     useEffect(() => {
         fetchComplaintDetail();
@@ -27,11 +28,19 @@ const FeedbackForm = () => {
             );
             const complaintData = response.data.data;
 
+            // Check if complaint status is done
             if (complaintData.status !== "done") {
                 alert(
                     "Feedback hanya dapat diberikan untuk keluhan yang sudah selesai"
                 );
                 navigate("/keluhan/list");
+                return;
+            }
+
+            // Check if feedback already exists for this complaint
+            if (complaintData.feedback) {
+                alert("Anda sudah memberikan feedback untuk keluhan ini");
+                navigate(`/keluhan/${complaintId}`);
                 return;
             }
 
@@ -56,14 +65,14 @@ const FeedbackForm = () => {
         setSubmitting(true);
 
         try {
-            const response = await axiosInstance.post("/user/feedbacks", {
+            await axiosInstance.post("/user/feedbacks", {
                 complaint_id: complaintId,
                 rating: rating,
                 feedback_text: feedbackText || null,
             });
 
-            alert(response.data.message || "Feedback berhasil dikirim!");
-            navigate("/keluhan/list");
+            // Show success modal instead of alert
+            setShowSuccessModal(true);
         } catch (error) {
             const message =
                 error.response?.data?.message || "Gagal mengirim feedback";
@@ -71,6 +80,12 @@ const FeedbackForm = () => {
         }
 
         setSubmitting(false);
+    };
+
+    // Handle close success modal and navigate
+    const handleCloseSuccessModal = () => {
+        setShowSuccessModal(false);
+        navigate("/keluhan/list");
     };
 
     if (loading) {
@@ -300,6 +315,47 @@ const FeedbackForm = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Success Modal */}
+            {showSuccessModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-8 text-center">
+                        <div className="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg
+                                className="w-10 h-10 text-primary-700"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M5 13l4 4L19 7"
+                                />
+                            </svg>
+                        </div>
+
+                        <h2 className="text-2xl font-bold text-gray-800 mb-3">
+                            Feedback Berhasil Dikirim!
+                        </h2>
+
+                        <p className="text-gray-600 mb-8">
+                            Terima kasih atas feedback Anda. Admin akan
+                            menanggapi feedback Anda dan Anda akan menerima
+                            notifikasi jika ada tanggapan.
+                        </p>
+
+                        <button
+                            onClick={handleCloseSuccessModal}
+                            className="w-full bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-lg hover:shadow-xl"
+                        >
+                            Kembali ke Daftar Keluhan
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <Footer />
         </div>
     );

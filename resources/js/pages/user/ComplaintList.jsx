@@ -404,19 +404,41 @@ const ComplaintList = () => {
                                     </div>
 
                                     <div className="flex flex-col gap-2">
-                                        {complaint.status === "done" && (
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    navigate(
-                                                        `/feedback/${complaint.complaint_id}`
-                                                    );
-                                                }}
-                                                className="px-4 py-2 bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition duration-200 text-sm font-medium"
-                                            >
-                                                Beri Feedback
-                                            </button>
-                                        )}
+                                        {/* Feedback button - show different state based on feedback existence */}
+                                        {complaint.status === "done" &&
+                                            (complaint.feedback ? (
+                                                <button
+                                                    disabled
+                                                    className="px-4 py-2 bg-gray-100 text-gray-500 rounded-lg text-sm font-medium cursor-not-allowed flex items-center gap-2"
+                                                >
+                                                    <svg
+                                                        className="w-4 h-4"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M5 13l4 4L19 7"
+                                                        />
+                                                    </svg>
+                                                    Sudah Diberi Feedback
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        navigate(
+                                                            `/feedback/${complaint.complaint_id}`
+                                                        );
+                                                    }}
+                                                    className="px-4 py-2 bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition duration-200 text-sm font-medium"
+                                                >
+                                                    Beri Feedback
+                                                </button>
+                                            ))}
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();

@@ -28,7 +28,7 @@ const Dashboard = () => {
         fetchRecentComplaints();
     }, []);
 
-    // Subscribe to real-time complaint submissions and hide/unhide events
+    // Subscribe to public channel for new complaints and hide/unhide events
     useEffect(() => {
         const channel = window.Echo.channel("admin-channel");
 
@@ -75,12 +75,55 @@ const Dashboard = () => {
             }
         });
 
+        // Listen for status changes from admin channel (for all complaints in history)
+        channel.listen(".ComplaintStatusChanged", (event) => {
+            console.log(
+                "ComplaintStatusChanged received in Dashboard (admin-channel):",
+                event
+            );
+            setRecentComplaints((prev) =>
+                prev.map((complaint) =>
+                    complaint.complaint_id === event.complaint_id
+                        ? { ...complaint, status: event.new_status }
+                        : complaint
+                )
+            );
+        });
+
         return () => {
             channel.stopListening(".ComplaintSubmitted");
             channel.stopListening(".ComplaintHidden");
+            channel.stopListening(".ComplaintStatusChanged");
             window.Echo.leave("admin-channel");
         };
     }, []);
+
+    // Subscribe to private channel for user-specific status updates
+    useEffect(() => {
+        if (!user?.user_id) return;
+
+        const privateChannel = window.Echo.private(`user.${user.user_id}`);
+
+        // Listen for status changes on user's own complaints
+        privateChannel.listen(".ComplaintStatusChanged", (event) => {
+            console.log(
+                "ComplaintStatusChanged received in Dashboard (private):",
+                event
+            );
+            setRecentComplaints((prev) =>
+                prev.map((complaint) =>
+                    complaint.complaint_id === event.complaint_id
+                        ? { ...complaint, status: event.new_status }
+                        : complaint
+                )
+            );
+        });
+
+        return () => {
+            privateChannel.stopListening(".ComplaintStatusChanged");
+            window.Echo.leave(`user.${user.user_id}`);
+        };
+    }, [user?.user_id]);
 
     const fetchTicketBalance = async () => {
         try {

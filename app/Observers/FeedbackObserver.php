@@ -8,10 +8,12 @@ use Illuminate\Support\Facades\Log;
 
 class FeedbackObserver
 {
+    // Handle feedback created event and broadcast to admin channel
     public function created(Feedback $feedback): void
     {
-        // Broadcast event to admin channel
         try {
+            // Refresh model to get latest data including timestamps
+            $feedback->refresh();
             $feedback->load('user', 'complaint');
 
             $userData = [
@@ -28,6 +30,11 @@ class FeedbackObserver
                 'ruangan' => $feedback->complaint->ruangan ?? null,
             ];
 
+            // Use null-safe operator for created_at
+            $createdAt = $feedback->created_at 
+                ? $feedback->created_at->toISOString() 
+                : now()->toISOString();
+
             event(new FeedbackSubmitted(
                 $feedback->feedback_id,
                 $feedback->complaint_id,
@@ -36,7 +43,7 @@ class FeedbackObserver
                 $feedback->feedback_text,
                 $userData,
                 $complaintData,
-                $feedback->created_at->toISOString()
+                $createdAt
             ));
 
             Log::info('FeedbackSubmitted event dispatched', ['feedback_id' => $feedback->feedback_id]);
