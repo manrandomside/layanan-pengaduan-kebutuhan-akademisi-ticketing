@@ -7,7 +7,7 @@ import axiosInstance from "../../config/axios";
 
 const ComplaintForm = () => {
     const navigate = useNavigate();
-    const { user } = useAuth();
+    const { user, updateUser } = useAuth();
 
     const [formData, setFormData] = useState({
         kelas: "",
@@ -90,6 +90,10 @@ const ComplaintForm = () => {
                 keluhan: formData.keluhan,
                 priority: formData.priority,
             });
+
+            // Update user state di AuthContext agar Navbar ikut terupdate
+            const newTotalTickets = (user?.total_tickets || 0) - 1;
+            updateUser({ total_tickets: newTotalTickets });
 
             alert(response.data.message || "Keluhan berhasil diajukan!");
             navigate("/keluhan/list");

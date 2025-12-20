@@ -49,7 +49,7 @@ const KelolaKeluhan = () => {
         fetchComplaints("", true);
     }, []);
 
-    // Debounce search - fetch dari API setelah user berhenti mengetik
+    // Debounce search
     useEffect(() => {
         const debounceTimer = setTimeout(() => {
             fetchComplaints(searchKeyword, false);
@@ -62,7 +62,6 @@ const KelolaKeluhan = () => {
     useEffect(() => {
         const channel = window.Echo.channel("admin-channel");
 
-        // Listen for new complaint submissions
         channel.listen(".ComplaintSubmitted", (event) => {
             const newComplaint = {
                 complaint_id: event.complaint_id,
@@ -91,7 +90,6 @@ const KelolaKeluhan = () => {
             });
         });
 
-        // Listen for complaint status changes from other admins
         channel.listen(".ComplaintStatusChanged", (event) => {
             setComplaints((prev) =>
                 prev.map((complaint) =>
@@ -102,7 +100,6 @@ const KelolaKeluhan = () => {
             );
         });
 
-        // Listen for complaint hide/unhide actions
         channel.listen(".ComplaintHidden", (event) => {
             setComplaints((prev) =>
                 prev.map((complaint) =>
@@ -121,7 +118,7 @@ const KelolaKeluhan = () => {
         };
     }, []);
 
-    // Filter complaints by status and priority (client-side filtering)
+    // Filter complaints by status and priority
     useEffect(() => {
         filterComplaints();
     }, [statusFilter, priorityFilter, complaints]);
@@ -223,11 +220,11 @@ const KelolaKeluhan = () => {
         }
     };
 
-    // Clear search input
     const handleClearSearch = () => {
         setSearchKeyword("");
     };
 
+    // Generate and print PDF report with table layout
     const handleExportPDF = () => {
         const complaintsToExport =
             selectedComplaints.length > 0
@@ -246,7 +243,7 @@ const KelolaKeluhan = () => {
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Laporan Keluhan UPT LAB</title>
+                <title>Laporan Keluhan Citra Konsultama Ticketing</title>
                 <style>
                     body {
                         font-family: Arial, sans-serif;
@@ -255,36 +252,40 @@ const KelolaKeluhan = () => {
                     }
                     h1 {
                         text-align: center;
-                        color: #166534;
+                        color: #371f4a;
                         margin-bottom: 10px;
+                        font-size: 24px;
                     }
                     .subtitle {
                         text-align: center;
                         color: #666;
+                        margin-bottom: 5px;
+                        font-size: 14px;
+                    }
+                    .complaint-table {
+                        width: 100%;
+                        border-collapse: collapse;
                         margin-bottom: 30px;
-                    }
-                    .complaint {
-                        border: 1px solid #ddd;
-                        padding: 15px;
-                        margin-bottom: 20px;
                         page-break-inside: avoid;
+                        border: 1px solid #ddd;
                     }
-                    .complaint-header {
-                        background-color: #f5f5f5;
+                    .table-header {
+                        background-color: #f5f3f7;
+                        padding: 12px;
+                        border: 1px solid #ddd;
+                    }
+                    .complaint-table th {
+                        text-align: left;
                         padding: 10px;
-                        margin: -15px -15px 15px -15px;
-                        border-bottom: 2px solid #166534;
-                    }
-                    .field {
-                        margin-bottom: 8px;
-                    }
-                    .label {
+                        background-color: #f5f3f7;
+                        border: 1px solid #ddd;
                         font-weight: bold;
-                        display: inline-block;
                         width: 150px;
                     }
-                    .value {
-                        display: inline-block;
+                    .complaint-table td {
+                        padding: 10px;
+                        border: 1px solid #ddd;
+                        word-wrap: break-word;
                     }
                     .status {
                         display: inline-block;
@@ -292,6 +293,7 @@ const KelolaKeluhan = () => {
                         border-radius: 4px;
                         font-size: 12px;
                         font-weight: bold;
+                        margin-left: 10px;
                     }
                     .status-waiting {
                         background-color: #fef3c7;
@@ -311,6 +313,7 @@ const KelolaKeluhan = () => {
                         border-radius: 4px;
                         font-size: 12px;
                         font-weight: bold;
+                        margin-left: 5px;
                     }
                     .priority-low {
                         background-color: #f3f4f6;
@@ -328,11 +331,14 @@ const KelolaKeluhan = () => {
                         body {
                             padding: 10px;
                         }
+                        .complaint-table {
+                            page-break-inside: avoid;
+                        }
                     }
                 </style>
             </head>
             <body>
-                <h1>Laporan Keluhan UPT LAB</h1>
+                <h1>Laporan Keluhan Citra Konsultama Ticketing</h1>
                 <p class="subtitle">Sistem Layanan Pengaduan Kebutuhan Akademisi</p>
                 <p class="subtitle">Tanggal Cetak: ${new Date().toLocaleDateString(
                     "id-ID",
@@ -342,84 +348,89 @@ const KelolaKeluhan = () => {
                         year: "numeric",
                     }
                 )}</p>
+                <br/>
                 ${complaintsToExport
                     .map(
                         (c) => `
-                    <div class="complaint">
-                        <div class="complaint-header">
-                            <strong>Ticket ID: ${c.ticket_id}</strong>
-                            <span style="float: right;">
-                                <span class="status status-${
-                                    c.status
-                                }">${getStatusText(c.status)}</span>
-                                <span class="priority priority-${
-                                    c.priority
-                                }">${getPriorityText(c.priority)}</span>
-                            </span>
-                        </div>
-                        <div class="field">
-                            <span class="label">Nama Lengkap:</span>
-                            <span class="value">${c.nama_lengkap}</span>
-                        </div>
-                        <div class="field">
-                            <span class="label">NIM/NIP:</span>
-                            <span class="value">${c.nim_nip}</span>
-                        </div>
-                        <div class="field">
-                            <span class="label">Email:</span>
-                            <span class="value">${c.email}</span>
-                        </div>
-                        <div class="field">
-                            <span class="label">No Telepon:</span>
-                            <span class="value">${c.no_telepon}</span>
-                        </div>
-                        <div class="field">
-                            <span class="label">Status User:</span>
-                            <span class="value">${c.status_user}</span>
-                        </div>
-                        ${
-                            c.kelas
-                                ? `<div class="field">
-                            <span class="label">Kelas:</span>
-                            <span class="value">${c.kelas}</span>
-                        </div>`
-                                : ""
-                        }
-                        ${
-                            c.lab
-                                ? `<div class="field">
-                            <span class="label">Lab:</span>
-                            <span class="value">${c.lab}</span>
-                        </div>`
-                                : ""
-                        }
-                        ${
-                            c.ruangan
-                                ? `<div class="field">
-                            <span class="label">Ruangan:</span>
-                            <span class="value">${c.ruangan}</span>
-                        </div>`
-                                : ""
-                        }
-                        <div class="field">
-                            <span class="label">Keluhan:</span>
-                            <div style="margin-left: 150px; margin-top: 5px; white-space: pre-wrap;">${
-                                c.keluhan
-                            }</div>
-                        </div>
-                        <div class="field">
-                            <span class="label">Tanggal Pengajuan:</span>
-                            <span class="value">${new Date(
-                                c.created_at
-                            ).toLocaleDateString("id-ID", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                            })}</span>
-                        </div>
-                    </div>
+                    <table class="complaint-table">
+                        <thead>
+                            <tr>
+                                <td colspan="2" class="table-header">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <strong>Ticket ID: ${
+                                            c.ticket_id
+                                        }</strong>
+                                        <div>
+                                            <span class="status status-${
+                                                c.status
+                                            }">${getStatusText(c.status)}</span>
+                                            <span class="priority priority-${
+                                                c.priority
+                                            }">${getPriorityText(
+                            c.priority
+                        )}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>Nama Lengkap</th>
+                                <td>${c.nama_lengkap}</td>
+                            </tr>
+                            <tr>
+                                <th>NIM/NIP</th>
+                                <td>${c.nim_nip}</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>${c.email}</td>
+                            </tr>
+                            <tr>
+                                <th>No Telepon</th>
+                                <td>${c.no_telepon}</td>
+                            </tr>
+                            <tr>
+                                <th>Status User</th>
+                                <td>${c.status_user}</td>
+                            </tr>
+                            ${
+                                c.kelas
+                                    ? `<tr><th>Kelas</th><td>${c.kelas}</td></tr>`
+                                    : ""
+                            }
+                            ${
+                                c.lab
+                                    ? `<tr><th>Lab</th><td>${c.lab}</td></tr>`
+                                    : ""
+                            }
+                            ${
+                                c.ruangan
+                                    ? `<tr><th>Ruangan</th><td>${c.ruangan}</td></tr>`
+                                    : ""
+                            }
+                            <tr>
+                                <th>Keluhan</th>
+                                <td style="white-space: pre-wrap;">${
+                                    c.keluhan
+                                }</td>
+                            </tr>
+                            <tr>
+                                <th>Tanggal Pengajuan</th>
+                                <td>${new Date(c.created_at).toLocaleDateString(
+                                    "id-ID",
+                                    {
+                                        day: "numeric",
+                                        month: "long",
+                                        year: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    }
+                                )}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 `
                     )
                     .join("")}
@@ -476,7 +487,6 @@ const KelolaKeluhan = () => {
         return complaints.filter((c) => c.status === status).length;
     };
 
-    // Full page loading hanya untuk initial load
     if (initialLoading) {
         return (
             <div className="min-h-screen bg-gray-50 flex flex-col">

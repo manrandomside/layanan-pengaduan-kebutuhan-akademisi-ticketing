@@ -3,6 +3,10 @@ import Pusher from "pusher-js";
 
 window.Pusher = Pusher;
 
+// Base API URL dari environment variable
+const baseApiUrl = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+const authEndpointUrl = `${baseApiUrl}/broadcasting/auth`;
+
 // Get authentication token
 const getAuthHeaders = () => {
     const token = localStorage.getItem("auth_token");
@@ -15,18 +19,18 @@ const getAuthHeaders = () => {
 // Initialize Echo with Pusher
 const echo = new Echo({
     broadcaster: "pusher",
-    key: import.meta.env.VITE_PUSHER_APP_KEY || "83b58f1184a5699c4e63",
+    key: import.meta.env.VITE_PUSHER_APP_KEY || "",
     cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER || "ap1",
     forceTLS: true,
     encrypted: true,
-    authEndpoint: "http://localhost:8000/api/broadcasting/auth",
+    authEndpoint: authEndpointUrl,
     auth: {
         headers: getAuthHeaders(),
     },
     authorizer: (channel) => {
         return {
             authorize: (socketId, callback) => {
-                fetch("http://localhost:8000/api/broadcasting/auth", {
+                fetch(authEndpointUrl, {
                     method: "POST",
                     headers: {
                         ...getAuthHeaders(),
