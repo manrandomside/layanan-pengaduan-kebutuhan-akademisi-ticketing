@@ -191,7 +191,7 @@ const Dashboard = () => {
                         Dashboard Admin
                     </h1>
                     <p className="text-gray-600">
-                        Selamat datang di panel administrasi UPT LAB
+                        Selamat datang di panel administrasi Citra Konsultama
                     </p>
                 </div>
 

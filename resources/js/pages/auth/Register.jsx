@@ -24,11 +24,23 @@ const Register = () => {
             ...formData,
             [e.target.name]: e.target.value,
         });
-        setErrors({
-            ...errors,
-            [e.target.name]: "",
-        });
+        // Clear specific field error when user types
+        if (errors[e.target.name]) {
+            setErrors({
+                ...errors,
+                [e.target.name]: "",
+            });
+        }
         setErrorMessage("");
+    };
+
+    // Helper function to get error message for a field
+    const getFieldError = (fieldName) => {
+        if (!errors[fieldName]) return null;
+        if (Array.isArray(errors[fieldName])) {
+            return errors[fieldName][0];
+        }
+        return errors[fieldName];
     };
 
     const handleSubmit = async (e) => {
@@ -42,9 +54,24 @@ const Register = () => {
         if (result.success) {
             navigate("/dashboard");
         } else {
-            setErrorMessage(result.message);
+            // Handle validation errors from backend
             if (result.errors) {
                 setErrors(result.errors);
+
+                // Set specific error message for unique validation
+                if (result.errors.email) {
+                    setErrorMessage(getFieldError("email") || result.message);
+                } else if (result.errors.no_telepon) {
+                    setErrorMessage(
+                        getFieldError("no_telepon") || result.message
+                    );
+                } else if (result.errors.nim_nip) {
+                    setErrorMessage(getFieldError("nim_nip") || result.message);
+                } else {
+                    setErrorMessage(result.message);
+                }
+            } else {
+                setErrorMessage(result.message);
             }
         }
 
@@ -95,9 +122,9 @@ const Register = () => {
                                     placeholder="Masukkan nama lengkap"
                                     disabled={loading}
                                 />
-                                {errors.nama_lengkap && (
+                                {getFieldError("nama_lengkap") && (
                                     <p className="text-red-500 text-xs mt-1">
-                                        {errors.nama_lengkap[0]}
+                                        {getFieldError("nama_lengkap")}
                                     </p>
                                 )}
                             </div>
@@ -123,9 +150,9 @@ const Register = () => {
                                     placeholder="Masukkan NIM/NIP"
                                     disabled={loading}
                                 />
-                                {errors.nim_nip && (
+                                {getFieldError("nim_nip") && (
                                     <p className="text-red-500 text-xs mt-1">
-                                        {errors.nim_nip[0]}
+                                        {getFieldError("nim_nip")}
                                     </p>
                                 )}
                             </div>
@@ -170,9 +197,9 @@ const Register = () => {
                                     disabled={loading}
                                 />
                             </div>
-                            {errors.email && (
+                            {getFieldError("email") && (
                                 <p className="text-red-500 text-xs mt-1">
-                                    {errors.email[0]}
+                                    {getFieldError("email")}
                                 </p>
                             )}
                             {/* Email Warning Box */}
@@ -196,11 +223,11 @@ const Register = () => {
                                             Pastikan email Anda benar!
                                         </p>
                                         <p className="text-amber-700 text-xs mt-1">
-                                            Email ini akan digunakan untuk
-                                            verifikasi saat mengubah data akun
-                                            seperti email dan nomor telepon.
-                                            Pastikan Anda memiliki akses ke
-                                            email ini.
+                                            Email ini akan digunakan untuk ubah
+                                            password ketika lupa dan verifikasi
+                                            saat mengubah data akun seperti
+                                            email dan nomor telepon. Pastikan
+                                            Anda memiliki akses ke email ini.
                                         </p>
                                     </div>
                                 </div>
@@ -229,9 +256,9 @@ const Register = () => {
                                 placeholder="08xxxxxxxxxx"
                                 disabled={loading}
                             />
-                            {errors.no_telepon && (
+                            {getFieldError("no_telepon") && (
                                 <p className="text-red-500 text-xs mt-1">
-                                    {errors.no_telepon[0]}
+                                    {getFieldError("no_telepon")}
                                 </p>
                             )}
                         </div>
@@ -261,9 +288,9 @@ const Register = () => {
                                 <option value="staff">Staff</option>
                                 <option value="mahasiswa">Mahasiswa</option>
                             </select>
-                            {errors.status && (
+                            {getFieldError("status") && (
                                 <p className="text-red-500 text-xs mt-1">
-                                    {errors.status[0]}
+                                    {getFieldError("status")}
                                 </p>
                             )}
                         </div>
@@ -287,7 +314,7 @@ const Register = () => {
                                             ? "border-red-500"
                                             : "border-gray-300"
                                     } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200`}
-                                    placeholder="Minimal 8 karakter"
+                                    placeholder="Minimal 6 karakter"
                                     disabled={loading}
                                 />
                                 <button
@@ -334,9 +361,9 @@ const Register = () => {
                                     )}
                                 </button>
                             </div>
-                            {errors.password && (
+                            {getFieldError("password") && (
                                 <p className="text-red-500 text-xs mt-1">
-                                    {errors.password[0]}
+                                    {getFieldError("password")}
                                 </p>
                             )}
                         </div>

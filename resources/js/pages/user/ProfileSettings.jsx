@@ -53,6 +53,20 @@ const ProfileSettings = () => {
         text: "",
     });
 
+    // Helper function to extract error message from response
+    const getErrorMessage = (error, defaultMessage) => {
+        if (error.response?.data?.errors) {
+            const errors = error.response.data.errors;
+            // Get first error message from any field
+            const firstErrorField = Object.keys(errors)[0];
+            if (firstErrorField && errors[firstErrorField]) {
+                const fieldError = errors[firstErrorField];
+                return Array.isArray(fieldError) ? fieldError[0] : fieldError;
+            }
+        }
+        return error.response?.data?.message || defaultMessage;
+    };
+
     // Handle Profile Update
     const handleProfileUpdate = async (e) => {
         e.preventDefault();
@@ -70,8 +84,7 @@ const ProfileSettings = () => {
             });
             checkAuth();
         } catch (error) {
-            const message =
-                error.response?.data?.message || "Gagal memperbarui profile";
+            const message = getErrorMessage(error, "Gagal memperbarui profile");
             setProfileMessage({ type: "error", text: message });
         }
 
@@ -99,9 +112,11 @@ const ProfileSettings = () => {
             });
             setEmailPhoneStep("verify-email");
         } catch (error) {
-            const message =
-                error.response?.data?.message ||
-                "Gagal mengirim token verifikasi";
+            // Handle unique validation error for email
+            const message = getErrorMessage(
+                error,
+                "Gagal mengirim token verifikasi"
+            );
             setEmailPhoneMessage({ type: "error", text: message });
         }
 
@@ -133,7 +148,7 @@ const ProfileSettings = () => {
             });
             checkAuth();
         } catch (error) {
-            const message = error.response?.data?.message || "Verifikasi gagal";
+            const message = getErrorMessage(error, "Verifikasi gagal");
             setEmailPhoneMessage({ type: "error", text: message });
         }
 
@@ -159,9 +174,11 @@ const ProfileSettings = () => {
             });
             setEmailPhoneStep("verify-phone");
         } catch (error) {
-            const message =
-                error.response?.data?.message ||
-                "Gagal mengirim token verifikasi";
+            // Handle unique validation error for phone
+            const message = getErrorMessage(
+                error,
+                "Gagal mengirim token verifikasi"
+            );
             setEmailPhoneMessage({ type: "error", text: message });
         }
 
@@ -193,7 +210,7 @@ const ProfileSettings = () => {
             });
             checkAuth();
         } catch (error) {
-            const message = error.response?.data?.message || "Verifikasi gagal";
+            const message = getErrorMessage(error, "Verifikasi gagal");
             setEmailPhoneMessage({ type: "error", text: message });
         }
 
@@ -237,8 +254,7 @@ const ProfileSettings = () => {
                 new_password_confirmation: "",
             });
         } catch (error) {
-            const message =
-                error.response?.data?.message || "Gagal mengubah password";
+            const message = getErrorMessage(error, "Gagal mengubah password");
             setPasswordMessage({ type: "error", text: message });
         }
 
@@ -326,7 +342,7 @@ const ProfileSettings = () => {
                                 <div
                                     className={`mb-6 p-4 rounded-lg ${
                                         profileMessage.type === "success"
-                                            ? "bg-primary-50 border border-primary-200 text-primary-700"
+                                            ? "bg-green-50 border border-green-200 text-green-700"
                                             : "bg-red-50 border border-red-200 text-red-600"
                                     }`}
                                 >
@@ -427,7 +443,7 @@ const ProfileSettings = () => {
                                 <div
                                     className={`mb-6 p-4 rounded-lg ${
                                         emailPhoneMessage.type === "success"
-                                            ? "bg-primary-50 border border-primary-200 text-primary-700"
+                                            ? "bg-green-50 border border-green-200 text-green-700"
                                             : "bg-red-50 border border-red-200 text-red-600"
                                     }`}
                                 >
@@ -558,6 +574,10 @@ const ProfileSettings = () => {
                                                 new_no_telepon: "",
                                                 verification_token: "",
                                             });
+                                            setEmailPhoneMessage({
+                                                type: "",
+                                                text: "",
+                                            });
                                         }}
                                         className="mt-4 text-sm text-gray-600 hover:text-gray-800"
                                     >
@@ -610,6 +630,10 @@ const ProfileSettings = () => {
                                                 new_no_telepon: "",
                                                 verification_token: "",
                                             });
+                                            setEmailPhoneMessage({
+                                                type: "",
+                                                text: "",
+                                            });
                                         }}
                                         className="mt-4 text-sm text-gray-600 hover:text-gray-800"
                                     >
@@ -631,7 +655,7 @@ const ProfileSettings = () => {
                                 <div
                                     className={`mb-6 p-4 rounded-lg ${
                                         passwordMessage.type === "success"
-                                            ? "bg-primary-50 border border-primary-200 text-primary-700"
+                                            ? "bg-green-50 border border-green-200 text-green-700"
                                             : "bg-red-50 border border-red-200 text-red-600"
                                     }`}
                                 >
@@ -724,7 +748,7 @@ const ProfileSettings = () => {
                                                 })
                                             }
                                             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                                            placeholder="Minimal 8 karakter"
+                                            placeholder="Minimal 6 karakter"
                                             disabled={passwordLoading}
                                         />
                                         <button

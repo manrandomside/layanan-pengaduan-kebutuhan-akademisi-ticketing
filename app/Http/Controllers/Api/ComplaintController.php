@@ -121,7 +121,7 @@ class ComplaintController extends Controller
         ], 200);
     }
 
-    // Search complaint history for user dashboard (only visible complaints)
+    // Search complaint history for user dashboard (only visible complaints, no time limit)
     public function searchComplaintHistory(Request $request)
     {
         $keyword = $request->query('keyword');
@@ -129,7 +129,6 @@ class ComplaintController extends Controller
 
         $query = Complaint::query()
             ->where('is_hidden', 'visible')
-            ->where('created_at', '>=', now()->subMonth())
             ->orderBy('created_at', 'desc');
 
         if ($keyword) {

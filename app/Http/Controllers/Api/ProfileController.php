@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
@@ -119,7 +119,14 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $validator = Validator::make($request->all(), [
-            'new_email' => 'required|email|max:255|unique:users,email',
+            'new_email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($user->user_id, 'user_id'),
+            ],
+        ], [
+            'new_email.unique' => 'Email sudah terdaftar oleh user lain',
         ]);
 
         if ($validator->fails()) {
@@ -221,7 +228,14 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $validator = Validator::make($request->all(), [
-            'new_no_telepon' => 'required|string|max:20',
+            'new_no_telepon' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('users', 'no_telepon')->ignore($user->user_id, 'user_id'),
+            ],
+        ], [
+            'new_no_telepon.unique' => 'No telepon sudah terdaftar oleh user lain',
         ]);
 
         if ($validator->fails()) {

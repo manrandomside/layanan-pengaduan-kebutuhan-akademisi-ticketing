@@ -68,7 +68,7 @@ const LoginAdmin = () => {
                             Login Admin
                         </h1>
                         <p className="text-gray-600">
-                            Sistem Layanan Pengaduan UPT LAB
+                            Sistem Layanan Pengaduan Citra Konsultama
                         </p>
                     </div>
 

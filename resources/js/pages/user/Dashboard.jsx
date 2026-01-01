@@ -249,8 +249,10 @@ const Dashboard = () => {
         setCurrentPage(pageNumber);
     };
 
+    // Render pagination with first, prev, page numbers, next, last buttons
     const renderPagination = () => {
         if (totalPages <= 1) return null;
+
         const pageNumbers = [];
         const maxVisiblePages = 5;
         let startPage = Math.max(
@@ -266,11 +268,35 @@ const Dashboard = () => {
         }
 
         return (
-            <div className="flex items-center justify-center gap-2 mt-4">
+            <div className="flex items-center justify-center gap-1 sm:gap-2 mt-4">
+                {/* First Page Button (<<) */}
+                <button
+                    onClick={() => handlePageChange(1)}
+                    disabled={currentPage === 1}
+                    className="px-2 sm:px-3 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+                    title="Halaman Pertama"
+                >
+                    <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M11 19l-7-7 7-7M18 19l-7-7 7-7"
+                        />
+                    </svg>
+                </button>
+
+                {/* Previous Page Button (<) */}
                 <button
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="px-3 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+                    className="px-2 sm:px-3 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+                    title="Halaman Sebelumnya"
                 >
                     <svg
                         className="w-5 h-5"
@@ -286,24 +312,30 @@ const Dashboard = () => {
                         />
                     </svg>
                 </button>
+
+                {/* Ellipsis if not starting from page 1 */}
                 {startPage > 1 && (
                     <>
                         <button
                             onClick={() => handlePageChange(1)}
-                            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition duration-200"
+                            className="px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition duration-200"
                         >
                             1
                         </button>
                         {startPage > 2 && (
-                            <span className="px-2 text-gray-400">...</span>
+                            <span className="px-1 sm:px-2 text-gray-400">
+                                ...
+                            </span>
                         )}
                     </>
                 )}
+
+                {/* Page Numbers */}
                 {pageNumbers.map((number) => (
                     <button
                         key={number}
                         onClick={() => handlePageChange(number)}
-                        className={`px-4 py-2 rounded-lg border transition duration-200 ${
+                        className={`px-3 sm:px-4 py-2 rounded-lg border transition duration-200 ${
                             currentPage === number
                                 ? "bg-primary-700 text-white border-primary-700"
                                 : "border-gray-300 text-gray-600 hover:bg-gray-50"
@@ -312,23 +344,30 @@ const Dashboard = () => {
                         {number}
                     </button>
                 ))}
+
+                {/* Ellipsis if not ending at last page */}
                 {endPage < totalPages && (
                     <>
                         {endPage < totalPages - 1 && (
-                            <span className="px-2 text-gray-400">...</span>
+                            <span className="px-1 sm:px-2 text-gray-400">
+                                ...
+                            </span>
                         )}
                         <button
                             onClick={() => handlePageChange(totalPages)}
-                            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition duration-200"
+                            className="px-3 sm:px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition duration-200"
                         >
                             {totalPages}
                         </button>
                     </>
                 )}
+
+                {/* Next Page Button (>) */}
                 <button
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+                    className="px-2 sm:px-3 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+                    title="Halaman Berikutnya"
                 >
                     <svg
                         className="w-5 h-5"
@@ -341,6 +380,28 @@ const Dashboard = () => {
                             strokeLinejoin="round"
                             strokeWidth={2}
                             d="M9 5l7 7-7 7"
+                        />
+                    </svg>
+                </button>
+
+                {/* Last Page Button (>>) */}
+                <button
+                    onClick={() => handlePageChange(totalPages)}
+                    disabled={currentPage === totalPages}
+                    className="px-2 sm:px-3 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+                    title="Halaman Terakhir"
+                >
+                    <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M13 5l7 7-7 7M6 5l7 7-7 7"
                         />
                     </svg>
                 </button>

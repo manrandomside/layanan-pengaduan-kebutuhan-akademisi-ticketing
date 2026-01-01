@@ -17,7 +17,11 @@ Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login/user', [AuthController::class, 'loginUser']);
     Route::post('/login/admin', [AuthController::class, 'loginAdmin']);
+    
+    // Forgot Password Routes
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    Route::post('/forgot-password/verify-token', [AuthController::class, 'verifyResetToken']);
+    Route::post('/forgot-password/reset-password', [AuthController::class, 'resetPassword']);
     
     // Protected route - requires auth token to verify
     Route::middleware('auth:sanctum')->get('/me', [AuthController::class, 'me']);
