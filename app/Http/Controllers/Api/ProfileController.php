@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Admin;
 use App\Models\EmailVerification;
+use App\Models\AdminAssistanceRequest;
 use App\Mail\VerificationTokenMail;
+use App\Events\AssistanceRequestSubmitted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
@@ -29,7 +32,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update user profile
+     * Update user profile (nama_lengkap, nim_nip, status)
      */
     public function updateUserProfile(Request $request)
     {
@@ -75,7 +78,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Change user password
+     * Change user password (requires current password)
      */
     public function changeUserPassword(Request $request)
     {
@@ -112,7 +115,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Request email update - Token dikirim ke EMAIL BARU
+     * Request email update via token - Token dikirim ke EMAIL BARU
      */
     public function requestEmailUpdate(Request $request)
     {
@@ -137,10 +140,8 @@ class ProfileController extends Controller
             ], 422);
         }
 
-        // Generate 6 digit token
         $token = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
-        // Delete pending verifications sebelumnya untuk user ini
         EmailVerification::where('user_id', $user->user_id)
             ->where('type', 'email')
             ->where('is_verified', 'pending')
@@ -155,15 +156,24 @@ class ProfileController extends Controller
             'expires_at' => now()->addHours(24),
         ]);
 
-        // Kirim email ke EMAIL BARU
+        // Send email with enhanced error handling
         try {
             Mail::to($request->new_email)->send(
                 new VerificationTokenMail($user->nama_lengkap, $token, 'email')
             );
-        } catch (\Exception $e) {
+        } catch (\Swift_TransportException $e) {
+            Log::error('Mail Transport Error (Email Update): ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal mengirim email verifikasi. Silakan coba lagi.'
+                'message' => 'Gagal mengirim email verifikasi. Server email tidak dapat dihubungi.',
+                'error_type' => 'transport_error'
+            ], 500);
+        } catch (\Exception $e) {
+            Log::error('Mail Error (Email Update): ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim email verifikasi. Silakan coba lagi atau gunakan metode lain.',
+                'error_type' => 'general_error'
             ], 500);
         }
 
@@ -221,7 +231,71 @@ class ProfileController extends Controller
     }
 
     /**
-     * Request phone update - Token dikirim ke EMAIL LAMA (email saat ini)
+     * Request email change via admin
+     */
+    public function requestEmailChangeAdmin(Request $request)
+    {
+        $user = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'new_email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($user->user_id, 'user_id'),
+            ],
+        ], [
+            'new_email.required' => 'Email baru wajib diisi',
+            'new_email.email' => 'Format email tidak valid',
+            'new_email.unique' => 'Email sudah terdaftar oleh user lain',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Check for existing pending request
+        $existingRequest = AdminAssistanceRequest::where('user_id', $user->user_id)
+            ->where('type', 'email_change')
+            ->whereIn('status', ['pending', 'processing'])
+            ->first();
+
+        if ($existingRequest) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda sudah memiliki request perubahan email yang sedang diproses'
+            ], 400);
+        }
+
+        $assistanceRequest = AdminAssistanceRequest::create([
+            'user_id' => $user->user_id,
+            'type' => 'email_change',
+            'email_registered' => $user->email,
+            'nama_lengkap' => $user->nama_lengkap,
+            'nim_nip' => $user->nim_nip,
+            'new_value' => $request->new_email,
+            'status' => 'pending',
+        ]);
+
+        // Broadcast to admin channel
+        try {
+            broadcast(new AssistanceRequestSubmitted($assistanceRequest))->toOthers();
+        } catch (\Exception $e) {
+            Log::error('Broadcast Error: ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Request perubahan email telah dikirim ke admin. Silakan tunggu konfirmasi.'
+        ], 201);
+    }
+
+    /**
+     * Request phone update via token - Token dikirim ke EMAIL LAMA
      */
     public function requestPhoneUpdate(Request $request)
     {
@@ -246,10 +320,8 @@ class ProfileController extends Controller
             ], 422);
         }
 
-        // Generate 6 digit token
         $token = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
-        // Delete pending verifications sebelumnya untuk user ini
         EmailVerification::where('user_id', $user->user_id)
             ->where('type', 'phone')
             ->where('is_verified', 'pending')
@@ -264,15 +336,24 @@ class ProfileController extends Controller
             'expires_at' => now()->addHours(24),
         ]);
 
-        // Kirim email ke EMAIL LAMA (email saat ini)
+        // Send email with enhanced error handling
         try {
             Mail::to($user->email)->send(
                 new VerificationTokenMail($user->nama_lengkap, $token, 'phone')
             );
-        } catch (\Exception $e) {
+        } catch (\Swift_TransportException $e) {
+            Log::error('Mail Transport Error (Phone Update): ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal mengirim email verifikasi. Silakan coba lagi.'
+                'message' => 'Gagal mengirim email verifikasi. Server email tidak dapat dihubungi.',
+                'error_type' => 'transport_error'
+            ], 500);
+        } catch (\Exception $e) {
+            Log::error('Mail Error (Phone Update): ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim email verifikasi. Silakan coba lagi atau gunakan metode lain.',
+                'error_type' => 'general_error'
             ], 500);
         }
 
@@ -330,6 +411,86 @@ class ProfileController extends Controller
     }
 
     /**
+     * Request phone change via admin
+     */
+    public function requestPhoneChangeAdmin(Request $request)
+    {
+        $user = $request->user();
+
+        $validator = Validator::make($request->all(), [
+            'new_no_telepon' => [
+                'required',
+                'string',
+                'max:20',
+                Rule::unique('users', 'no_telepon')->ignore($user->user_id, 'user_id'),
+            ],
+        ], [
+            'new_no_telepon.required' => 'No telepon baru wajib diisi',
+            'new_no_telepon.unique' => 'No telepon sudah terdaftar oleh user lain',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        // Check for existing pending request
+        $existingRequest = AdminAssistanceRequest::where('user_id', $user->user_id)
+            ->where('type', 'phone_change')
+            ->whereIn('status', ['pending', 'processing'])
+            ->first();
+
+        if ($existingRequest) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda sudah memiliki request perubahan no telepon yang sedang diproses'
+            ], 400);
+        }
+
+        $assistanceRequest = AdminAssistanceRequest::create([
+            'user_id' => $user->user_id,
+            'type' => 'phone_change',
+            'email_registered' => $user->email,
+            'nama_lengkap' => $user->nama_lengkap,
+            'nim_nip' => $user->nim_nip,
+            'new_value' => $request->new_no_telepon,
+            'status' => 'pending',
+        ]);
+
+        // Broadcast to admin channel
+        try {
+            broadcast(new AssistanceRequestSubmitted($assistanceRequest))->toOthers();
+        } catch (\Exception $e) {
+            Log::error('Broadcast Error: ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Request perubahan no telepon telah dikirim ke admin. Silakan tunggu konfirmasi.'
+        ], 201);
+    }
+
+    /**
+     * Get user's assistance requests
+     */
+    public function getUserAssistanceRequests(Request $request)
+    {
+        $user = $request->user();
+
+        $requests = AdminAssistanceRequest::where('user_id', $user->user_id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $requests
+        ], 200);
+    }
+
+    /**
      * Get admin profile
      */
     public function getAdminProfile(Request $request)
@@ -373,7 +534,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Change admin password
+     * Change admin password (no current password required)
      */
     public function changeAdminPassword(Request $request)
     {

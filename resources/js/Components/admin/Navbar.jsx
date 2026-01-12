@@ -20,10 +20,11 @@ const Navbar = () => {
         fetchNotifications();
     }, []);
 
-    // Subscribe to real-time complaint submissions
+    // Subscribe to real-time events
     useEffect(() => {
         const channel = window.Echo.channel("admin-channel");
 
+        // Listen for new complaint submissions
         channel.listen(".ComplaintSubmitted", (event) => {
             const newNotification = {
                 notification_id: `complaint_${
@@ -41,8 +42,32 @@ const Navbar = () => {
             setUnreadCount((prev) => prev + 1);
         });
 
+        // Listen for new assistance requests
+        channel.listen(".AssistanceRequestSubmitted", (event) => {
+            const typeLabels = {
+                password_reset: "Reset Password",
+                email_change: "Ganti Email",
+                phone_change: "Ganti No Telepon",
+            };
+
+            const newNotification = {
+                notification_id: `assistance_${event.id}_${Date.now()}`,
+                type: "assistance_request",
+                title: "Request Bantuan Baru",
+                message: `${typeLabels[event.type] || event.type} dari ${
+                    event.nama_lengkap
+                }`,
+                is_read: "unread",
+                created_at: event.created_at,
+            };
+
+            setNotifications((prev) => [newNotification, ...prev]);
+            setUnreadCount((prev) => prev + 1);
+        });
+
         return () => {
             channel.stopListening(".ComplaintSubmitted");
+            channel.stopListening(".AssistanceRequestSubmitted");
             window.Echo.leave("admin-channel");
         };
     }, []);
@@ -87,15 +112,29 @@ const Navbar = () => {
         navigate("/admin/login");
     };
 
-    const handleNotificationClick = async (notificationId) => {
+    const handleNotificationClick = async (notification) => {
         try {
-            await axiosInstance.put(
-                `/admin/notifications/${notificationId}/read`
-            );
+            // Mark as read if it has a valid notification_id from database
+            if (
+                notification.notification_id &&
+                !notification.notification_id.toString().includes("_")
+            ) {
+                await axiosInstance.put(
+                    `/admin/notifications/${notification.notification_id}/read`
+                );
+            }
+
+            // Navigate based on notification type
+            if (notification.type === "assistance_request") {
+                navigate("/admin/bantuan-user");
+            } else if (notification.related_complaint_id) {
+                navigate(`/admin/kelola-keluhan`);
+            }
+
             fetchNotifications();
             setShowNotificationDropdown(false);
         } catch (error) {
-            console.error("Error marking notification as read:", error);
+            console.error("Error handling notification:", error);
         }
     };
 
@@ -119,7 +158,7 @@ const Navbar = () => {
                                 className="w-32 h-32 object-contain"
                             />
                             <span className="ml-3 text-xl font-bold text-gray-800 hidden sm:block">
-                                Admin Panel Ticketing System
+                                Admin Panel
                             </span>
                         </Link>
                     </div>
@@ -145,6 +184,16 @@ const Navbar = () => {
                             }`}
                         >
                             Kelola Pengguna
+                        </Link>
+                        <Link
+                            to="/admin/bantuan-user"
+                            className={`px-4 py-2 rounded-lg font-medium transition duration-200 ${
+                                isActivePath("/admin/bantuan-user")
+                                    ? "bg-primary-50 text-primary-700"
+                                    : "text-gray-600 hover:text-primary-700 hover:bg-primary-50"
+                            }`}
+                        >
+                            Bantuan User
                         </Link>
                         <Link
                             to="/admin/analisis-layanan"
@@ -203,12 +252,15 @@ const Navbar = () => {
                                             Tidak ada notifikasi
                                         </div>
                                     ) : (
-                                        notifications.map((notif) => (
+                                        notifications.map((notif, index) => (
                                             <button
-                                                key={notif.notification_id}
+                                                key={
+                                                    notif.notification_id ||
+                                                    index
+                                                }
                                                 onClick={() =>
                                                     handleNotificationClick(
-                                                        notif.notification_id
+                                                        notif
                                                     )
                                                 }
                                                 className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition duration-200 border-b border-gray-100 ${
@@ -374,6 +426,29 @@ const Navbar = () => {
                             />
                         </svg>
                         <span className="text-xs mt-1">Pengguna</span>
+                    </Link>
+                    <Link
+                        to="/admin/bantuan-user"
+                        className={`flex flex-col items-center py-2 px-3 rounded-lg ${
+                            isActivePath("/admin/bantuan-user")
+                                ? "text-primary-700 bg-primary-50"
+                                : "text-gray-600"
+                        }`}
+                    >
+                        <svg
+                            className="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                            />
+                        </svg>
+                        <span className="text-xs mt-1">Bantuan</span>
                     </Link>
                     <Link
                         to="/admin/analisis-layanan"

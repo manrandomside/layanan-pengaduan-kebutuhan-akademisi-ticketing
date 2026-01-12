@@ -2,7 +2,6 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 
-// Import components (akan dibuat nanti)
 // Auth Pages
 import LoginUser from "./pages/auth/LoginUser";
 import LoginAdmin from "./pages/auth/LoginAdmin";
@@ -21,6 +20,7 @@ import ProfileSettings from "./pages/user/ProfileSettings";
 import AdminDashboard from "./pages/admin/Dashboard";
 import KelolaKeluhan from "./pages/admin/KelolaKeluhan";
 import KelolaPengguna from "./pages/admin/KelolaPengguna";
+import BantuanUser from "./pages/admin/BantuanUser";
 import AnalisisLayanan from "./pages/admin/AnalisisLayanan";
 import AdminProfileSettings from "./pages/admin/ProfileSettings";
 
@@ -198,6 +198,14 @@ const Router = () => {
                     element={
                         <ProtectedAdminRoute>
                             <KelolaPengguna />
+                        </ProtectedAdminRoute>
+                    }
+                />
+                <Route
+                    path="/admin/bantuan-user"
+                    element={
+                        <ProtectedAdminRoute>
+                            <BantuanUser />
                         </ProtectedAdminRoute>
                     }
                 />

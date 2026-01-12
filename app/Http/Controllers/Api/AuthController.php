@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Admin;
 use App\Models\EmailVerification;
+use App\Models\AdminAssistanceRequest;
 use App\Mail\PasswordResetTokenMail;
+use App\Events\AssistanceRequestSubmitted;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -205,7 +208,6 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Check if email exists in users table
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
@@ -215,16 +217,13 @@ class AuthController extends Controller
             ], 404);
         }
 
-        // Generate 6 digit token
         $token = str_pad(random_int(0, 999999), 6, '0', STR_PAD_LEFT);
 
-        // Delete previous pending tokens for this email
         EmailVerification::where('email', $request->email)
             ->where('type', 'password_reset')
             ->where('is_verified', 'pending')
             ->delete();
 
-        // Save token to email_verifications table
         EmailVerification::create([
             'user_id' => null,
             'email' => $request->email,
@@ -235,15 +234,24 @@ class AuthController extends Controller
             'expires_at' => now()->addHours(24),
         ]);
 
-        // Send email with token
+        // Send email with enhanced error handling
         try {
             Mail::to($request->email)->send(
                 new PasswordResetTokenMail($user->nama_lengkap, $token)
             );
-        } catch (\Exception $e) {
+        } catch (\Swift_TransportException $e) {
+            Log::error('Mail Transport Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal mengirim email. Silakan coba lagi.'
+                'message' => 'Gagal mengirim email. Server email tidak dapat dihubungi.',
+                'error_type' => 'transport_error'
+            ], 500);
+        } catch (\Exception $e) {
+            Log::error('Mail Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim email. Silakan coba lagi atau gunakan metode lain.',
+                'error_type' => 'general_error'
             ], 500);
         }
 
@@ -251,6 +259,83 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Token reset password telah dikirim ke email Anda'
         ], 200);
+    }
+
+    /**
+     * Forgot password via admin - Submit request to admin for manual reset
+     */
+    public function forgotPasswordRequestAdmin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'nama_lengkap' => 'required|string|max:255',
+            'nim_nip' => 'required|string|max:50',
+        ], [
+            'email.required' => 'Email wajib diisi',
+            'nama_lengkap.required' => 'Nama lengkap wajib diisi',
+            'nim_nip.required' => 'NIM/NIP wajib diisi',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation error',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email tidak terdaftar dalam sistem'
+            ], 404);
+        }
+
+        // Verify identity matches
+        if ($user->nama_lengkap !== $request->nama_lengkap || $user->nim_nip !== $request->nim_nip) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data yang dimasukkan tidak sesuai dengan data terdaftar'
+            ], 400);
+        }
+
+        // Check for existing pending request
+        $existingRequest = AdminAssistanceRequest::where('email_registered', $request->email)
+            ->where('type', 'password_reset')
+            ->whereIn('status', ['pending', 'processing'])
+            ->first();
+
+        if ($existingRequest) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda sudah memiliki request reset password yang sedang diproses'
+            ], 400);
+        }
+
+        // Create assistance request
+        $assistanceRequest = AdminAssistanceRequest::create([
+            'user_id' => $user->user_id,
+            'type' => 'password_reset',
+            'email_registered' => $request->email,
+            'nama_lengkap' => $request->nama_lengkap,
+            'nim_nip' => $request->nim_nip,
+            'new_value' => null,
+            'status' => 'pending',
+        ]);
+
+        // Broadcast to admin channel
+        try {
+            broadcast(new AssistanceRequestSubmitted($assistanceRequest))->toOthers();
+        } catch (\Exception $e) {
+            Log::error('Broadcast Error: ' . $e->getMessage());
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Request bantuan reset password telah dikirim ke admin. Silakan tunggu konfirmasi melalui WhatsApp ke nomor telepon terdaftar Anda.'
+        ], 201);
     }
 
     /**
@@ -271,7 +356,6 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Find valid token
         $verification = EmailVerification::where('email', $request->email)
             ->where('token', $request->token)
             ->where('type', 'password_reset')
@@ -286,7 +370,6 @@ class AuthController extends Controller
             ], 400);
         }
 
-        // Mark token as verified
         $verification->update([
             'is_verified' => 'verified',
         ]);
@@ -322,7 +405,6 @@ class AuthController extends Controller
             ], 422);
         }
 
-        // Check if token is verified
         $verification = EmailVerification::where('email', $request->email)
             ->where('token', $request->token)
             ->where('type', 'password_reset')
@@ -336,7 +418,6 @@ class AuthController extends Controller
             ], 400);
         }
 
-        // Find user and update password
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
@@ -350,7 +431,6 @@ class AuthController extends Controller
             'password' => Hash::make($request->new_password),
         ]);
 
-        // Delete used token
         $verification->delete();
 
         return response()->json([

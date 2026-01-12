@@ -454,7 +454,7 @@ const Dashboard = () => {
                                 </svg>
                             </div>
                             <div className="space-y-4">
-                                <div className="bg-gradient-to-br from-primary-50 to-primary-100 rounded-lg p-4 border border-primary-200">
+                                <div className="bg-linear-to-br from-primary-50 to-primary-100 rounded-lg p-4 border border-primary-200">
                                     <p className="text-sm text-gray-600 mb-1">
                                         Total Tiket
                                     </p>
@@ -501,6 +501,37 @@ const Dashboard = () => {
                                         Maksimal 3 tiket per hari dan 15 tiket
                                         total per akun
                                     </p>
+                                </div>
+
+                                {/* Info: Refresh browser notice */}
+                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                    <div className="flex items-start gap-2">
+                                        <svg
+                                            className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                                            />
+                                        </svg>
+                                        <p className="text-xs text-blue-700">
+                                            Tiket tidak bisa di-claim? Coba{" "}
+                                            <button
+                                                onClick={() =>
+                                                    window.location.reload()
+                                                }
+                                                className="font-semibold underline hover:text-blue-800"
+                                            >
+                                                refresh halaman
+                                            </button>{" "}
+                                            untuk memperbarui data terbaru.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -574,7 +605,7 @@ const Dashboard = () => {
                                 </button>
                                 <div className="border-t border-gray-200 my-2"></div>
                                 <a
-                                    href="https://drive.google.com/file/d/1sAhWXN7TXrp-pbPkhCEziD5c93hTUkVR/view?usp=sharing"
+                                    href="https://drive.google.com/file/d/1Pcu2ECxRXh1lK8Ujs6Kjv3KJKY9IpcOy/view?usp=sharing"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="w-full flex items-center justify-center gap-3 p-3 border-2 border-primary-500 text-primary-700 rounded-lg hover:bg-primary-50 transition duration-200"
