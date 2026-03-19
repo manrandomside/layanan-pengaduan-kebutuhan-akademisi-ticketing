@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { motion } from "motion/react";
+import { Phone, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, ArrowLeft } from "lucide-react";
 
 const LoginUser = () => {
     const navigate = useNavigate();
@@ -45,146 +47,191 @@ const LoginUser = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white to-primary-50 px-4">
-            <div className="w-full max-w-md">
-                <div className="bg-white rounded-2xl shadow-xl p-8">
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                            Login User
+        <div
+            className="min-h-screen flex items-center justify-center relative overflow-hidden px-4"
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+        >
+            {/* Animated gradient background */}
+            <div
+                className="absolute inset-0"
+                style={{
+                    background: "linear-gradient(-45deg, #1a0f24, #371f4a, #4e395e, #74588c, #371f4a)",
+                    backgroundSize: "400% 400%",
+                    animation: "gradientShift 15s ease infinite",
+                }}
+            />
+
+            {/* Dot grid overlay */}
+            <div
+                className="absolute inset-0 opacity-15"
+                style={{
+                    backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px)",
+                    backgroundSize: "24px 24px",
+                }}
+            />
+
+            {/* Back to home */}
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className="absolute top-6 left-6 z-20"
+            >
+                <Link
+                    to="/"
+                    className="flex items-center gap-2 text-white/70 hover:text-white text-sm font-medium transition-colors"
+                >
+                    <ArrowLeft size={16} />
+                    Kembali
+                </Link>
+            </motion.div>
+
+            {/* Card */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="relative z-10 w-full max-w-md"
+            >
+                <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl shadow-black/20 p-8 md:p-10 border border-white/50">
+                    {/* Logo */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.15 }}
+                        className="text-center mb-8"
+                    >
+                        <div className="flex justify-center mb-4">
+                            <img src="/images/logo_UPT.png" alt="Logo" className="h-20 w-auto" />
+                        </div>
+                        <h1 className="text-2xl font-extrabold text-primary-900 mb-1">
+                            Masuk ke Akun
                         </h1>
-                        <p className="text-gray-600">
+                        <p className="text-primary-400 text-sm">
                             Sistem Layanan Pengaduan Kebutuhan Akademisi
                         </p>
-                    </div>
+                    </motion.div>
 
+                    {/* Error */}
                     {error && (
-                        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                            <p className="text-red-600 text-sm">{error}</p>
-                        </div>
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl"
+                        >
+                            <p className="text-red-600 text-sm font-medium">{error}</p>
+                        </motion.div>
                     )}
 
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* Phone */}
                         <div>
-                            <label
-                                htmlFor="no_telepon"
-                                className="block text-sm font-medium text-gray-700 mb-2"
-                            >
+                            <label htmlFor="no_telepon" className="block text-sm font-semibold text-primary-800 mb-2">
                                 No Telepon
                             </label>
-                            <input
-                                type="text"
-                                id="no_telepon"
-                                name="no_telepon"
-                                value={formData.no_telepon}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200"
-                                placeholder="Masukkan no telepon"
-                                disabled={loading}
-                            />
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <Phone size={18} className="text-primary-300" />
+                                </div>
+                                <input
+                                    type="text"
+                                    id="no_telepon"
+                                    name="no_telepon"
+                                    value={formData.no_telepon}
+                                    onChange={handleChange}
+                                    className="w-full pl-11 pr-4 py-3.5 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-primary-50/30 text-primary-900 placeholder-primary-300"
+                                    placeholder="08xxxxxxxxxx"
+                                    disabled={loading}
+                                />
+                            </div>
                         </div>
 
+                        {/* Password */}
                         <div>
-                            <label
-                                htmlFor="password"
-                                className="block text-sm font-medium text-gray-700 mb-2"
-                            >
+                            <label htmlFor="password" className="block text-sm font-semibold text-primary-800 mb-2">
                                 Password
                             </label>
                             <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <Lock size={18} className="text-primary-300" />
+                                </div>
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     id="password"
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200"
+                                    className="w-full pl-11 pr-12 py-3.5 border border-primary-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-primary-50/30 text-primary-900 placeholder-primary-300"
                                     placeholder="Masukkan password"
                                     disabled={loading}
                                 />
                                 <button
                                     type="button"
-                                    onClick={() =>
-                                        setShowPassword(!showPassword)
-                                    }
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-primary-400 hover:text-primary-600 transition-colors"
                                 >
-                                    {showPassword ? (
-                                        <svg
-                                            className="w-5 h-5"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                                            />
-                                        </svg>
-                                    ) : (
-                                        <svg
-                                            className="w-5 h-5"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                            />
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                            />
-                                        </svg>
-                                    )}
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between text-sm">
+                        {/* Forgot password */}
+                        <div className="flex justify-end">
                             <Link
                                 to="/forgot-password"
-                                className="text-primary-700 hover:text-primary-800 font-medium"
+                                className="text-sm font-semibold text-primary-600 hover:text-primary-800 transition-colors"
                             >
                                 Lupa Password?
                             </Link>
                         </div>
 
-                        <button
+                        {/* Submit */}
+                        <motion.button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                            whileHover={{ scale: loading ? 1 : 1.02 }}
+                            whileTap={{ scale: loading ? 1 : 0.98 }}
+                            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-700 to-primary-900 hover:from-primary-800 hover:to-primary-950 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-primary-800/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
-                            {loading ? "Loading..." : "Login"}
-                        </button>
+                            {loading ? (
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <>
+                                    Masuk
+                                    <ArrowRight size={18} />
+                                </>
+                            )}
+                        </motion.button>
                     </form>
 
-                    <div className="mt-6 text-center text-sm text-gray-600">
-                        Belum punya akun?{" "}
-                        <Link
-                            to="/register"
-                            className="text-primary-700 hover:text-primary-800 font-semibold"
-                        >
-                            Daftar disini
-                        </Link>
-                    </div>
-
-                    <div className="mt-4 text-center">
-                        <Link
-                            to="/admin/login"
-                            className="text-sm text-gray-500 hover:text-gray-700"
-                        >
-                            Login sebagai Admin
-                        </Link>
+                    {/* Links */}
+                    <div className="mt-8 pt-6 border-t border-primary-100">
+                        <p className="text-center text-sm text-primary-500">
+                            Belum punya akun?{" "}
+                            <Link to="/register" className="text-primary-700 hover:text-primary-900 font-bold transition-colors">
+                                Daftar disini
+                            </Link>
+                        </p>
+                        <div className="mt-4 flex items-center justify-center gap-2">
+                            <ShieldCheck size={14} className="text-primary-300" />
+                            <Link
+                                to="/admin/login"
+                                className="text-xs text-primary-400 hover:text-primary-600 font-medium transition-colors"
+                            >
+                                Login sebagai Admin
+                            </Link>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </motion.div>
+
+            <style>{`
+                @keyframes gradientShift {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+            `}</style>
         </div>
     );
 };

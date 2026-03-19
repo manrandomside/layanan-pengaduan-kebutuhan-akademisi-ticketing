@@ -1,6 +1,20 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
+import { motion } from "motion/react";
+import {
+    User,
+    Hash,
+    Mail,
+    Phone,
+    Lock,
+    Eye,
+    EyeOff,
+    ArrowRight,
+    ArrowLeft,
+    AlertTriangle,
+    GraduationCap,
+} from "lucide-react";
 
 const Register = () => {
     const navigate = useNavigate();
@@ -24,7 +38,6 @@ const Register = () => {
             ...formData,
             [e.target.name]: e.target.value,
         });
-        // Clear specific field error when user types
         if (errors[e.target.name]) {
             setErrors({
                 ...errors,
@@ -34,7 +47,6 @@ const Register = () => {
         setErrorMessage("");
     };
 
-    // Helper function to get error message for a field
     const getFieldError = (fieldName) => {
         if (!errors[fieldName]) return null;
         if (Array.isArray(errors[fieldName])) {
@@ -54,17 +66,12 @@ const Register = () => {
         if (result.success) {
             navigate("/dashboard");
         } else {
-            // Handle validation errors from backend
             if (result.errors) {
                 setErrors(result.errors);
-
-                // Set specific error message for unique validation
                 if (result.errors.email) {
                     setErrorMessage(getFieldError("email") || result.message);
                 } else if (result.errors.no_telepon) {
-                    setErrorMessage(
-                        getFieldError("no_telepon") || result.message
-                    );
+                    setErrorMessage(getFieldError("no_telepon") || result.message);
                 } else if (result.errors.nim_nip) {
                     setErrorMessage(getFieldError("nim_nip") || result.message);
                 } else {
@@ -78,316 +85,276 @@ const Register = () => {
         setLoading(false);
     };
 
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-white to-primary-50 px-4 py-8">
-            <div className="w-full max-w-2xl">
-                <div className="bg-white rounded-2xl shadow-xl p-8">
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                            Registrasi Akun
-                        </h1>
-                        <p className="text-gray-600">
-                            Sistem Layanan Pengaduan Kebutuhan Akademisi
-                        </p>
-                    </div>
+    // Input field component for cleaner JSX
+    const InputField = ({ icon: Icon, label, name, type = "text", placeholder, children }) => (
+        <div>
+            <label htmlFor={name} className="block text-sm font-semibold text-primary-800 mb-2">
+                {label}
+            </label>
+            <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Icon size={18} className="text-primary-300" />
+                </div>
+                <input
+                    type={type}
+                    id={name}
+                    name={name}
+                    value={formData[name]}
+                    onChange={handleChange}
+                    className={`w-full pl-11 pr-4 py-3.5 border ${
+                        errors[name] ? "border-red-400 bg-red-50/30" : "border-primary-200 bg-primary-50/30"
+                    } rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-primary-900 placeholder-primary-300`}
+                    placeholder={placeholder}
+                    disabled={loading}
+                />
+                {children}
+            </div>
+            {getFieldError(name) && (
+                <p className="text-red-500 text-xs mt-1.5 font-medium">{getFieldError(name)}</p>
+            )}
+        </div>
+    );
 
-                    {errorMessage && (
-                        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                            <p className="text-red-600 text-sm">
-                                {errorMessage}
-                            </p>
+    return (
+        <div
+            className="min-h-screen flex items-center justify-center relative overflow-hidden px-4 py-8"
+            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+        >
+            {/* Animated gradient background */}
+            <div
+                className="absolute inset-0"
+                style={{
+                    background: "linear-gradient(-45deg, #1a0f24, #371f4a, #4e395e, #74588c, #371f4a)",
+                    backgroundSize: "400% 400%",
+                    animation: "gradientShift 15s ease infinite",
+                }}
+            />
+
+            {/* Dot grid overlay */}
+            <div
+                className="absolute inset-0 opacity-15"
+                style={{
+                    backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px)",
+                    backgroundSize: "24px 24px",
+                }}
+            />
+
+            {/* Back to home */}
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className="absolute top-6 left-6 z-20"
+            >
+                <Link
+                    to="/"
+                    className="flex items-center gap-2 text-white/70 hover:text-white text-sm font-medium transition-colors"
+                >
+                    <ArrowLeft size={16} />
+                    Kembali
+                </Link>
+            </motion.div>
+
+            {/* Card */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="relative z-10 w-full max-w-2xl"
+            >
+                <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl shadow-black/20 p-8 md:p-10 border border-white/50">
+                    {/* Header */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.15 }}
+                        className="text-center mb-8"
+                    >
+                        <div className="flex justify-center mb-4">
+                            <img src="/images/logo_UPT.png" alt="Logo" className="h-20 w-auto" />
                         </div>
+                        <h1 className="text-2xl font-extrabold text-primary-900 mb-1">
+                            Buat Akun Baru
+                        </h1>
+                        <p className="text-primary-400 text-sm">
+                            Daftar untuk mulai mengajukan keluhan akademis
+                        </p>
+                    </motion.div>
+
+                    {/* Error */}
+                    {errorMessage && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl"
+                        >
+                            <p className="text-red-600 text-sm font-medium">{errorMessage}</p>
+                        </motion.div>
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* Row 1: Name + NIM */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            <div>
-                                <label
-                                    htmlFor="nama_lengkap"
-                                    className="block text-sm font-medium text-gray-700 mb-2"
-                                >
-                                    Nama Lengkap
-                                </label>
-                                <input
-                                    type="text"
-                                    id="nama_lengkap"
-                                    name="nama_lengkap"
-                                    value={formData.nama_lengkap}
-                                    onChange={handleChange}
-                                    className={`w-full px-4 py-3 border ${
-                                        errors.nama_lengkap
-                                            ? "border-red-500"
-                                            : "border-gray-300"
-                                    } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200`}
-                                    placeholder="Masukkan nama lengkap"
-                                    disabled={loading}
-                                />
-                                {getFieldError("nama_lengkap") && (
-                                    <p className="text-red-500 text-xs mt-1">
-                                        {getFieldError("nama_lengkap")}
-                                    </p>
-                                )}
-                            </div>
+                            <InputField
+                                icon={User}
+                                label="Nama Lengkap"
+                                name="nama_lengkap"
+                                placeholder="Masukkan nama lengkap"
+                            />
+                            <InputField
+                                icon={Hash}
+                                label="NIM/NIP"
+                                name="nim_nip"
+                                placeholder="Masukkan NIM/NIP"
+                            />
+                        </div>
 
-                            <div>
-                                <label
-                                    htmlFor="nim_nip"
-                                    className="block text-sm font-medium text-gray-700 mb-2"
-                                >
-                                    NIM/NIP
-                                </label>
-                                <input
-                                    type="text"
-                                    id="nim_nip"
-                                    name="nim_nip"
-                                    value={formData.nim_nip}
-                                    onChange={handleChange}
-                                    className={`w-full px-4 py-3 border ${
-                                        errors.nim_nip
-                                            ? "border-red-500"
-                                            : "border-gray-300"
-                                    } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200`}
-                                    placeholder="Masukkan NIM/NIP"
-                                    disabled={loading}
-                                />
-                                {getFieldError("nim_nip") && (
-                                    <p className="text-red-500 text-xs mt-1">
-                                        {getFieldError("nim_nip")}
+                        {/* Email */}
+                        <InputField
+                            icon={Mail}
+                            label="Email"
+                            name="email"
+                            type="email"
+                            placeholder="contoh@email.com"
+                        />
+
+                        {/* Email warning */}
+                        <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl">
+                            <div className="flex items-start gap-2.5">
+                                <AlertTriangle size={18} className="text-amber-500 flex-shrink-0 mt-0.5" />
+                                <div>
+                                    <p className="text-amber-800 text-sm font-semibold">
+                                        Pastikan email Anda benar!
                                     </p>
-                                )}
+                                    <p className="text-amber-700 text-xs mt-1 leading-relaxed">
+                                        Email ini akan digunakan untuk ubah password ketika lupa dan verifikasi
+                                        saat mengubah data akun seperti email dan nomor telepon. Pastikan Anda
+                                        memiliki akses ke email ini.
+                                    </p>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Email Field - Full Width dengan Warning */}
+                        {/* Phone */}
+                        <InputField
+                            icon={Phone}
+                            label="No Telepon"
+                            name="no_telepon"
+                            placeholder="08xxxxxxxxxx"
+                        />
+
+                        {/* Status */}
                         <div>
-                            <label
-                                htmlFor="email"
-                                className="block text-sm font-medium text-gray-700 mb-2"
-                            >
-                                Email
+                            <label htmlFor="status" className="block text-sm font-semibold text-primary-800 mb-2">
+                                Status
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <svg
-                                        className="w-5 h-5 text-gray-400"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                                        />
-                                    </svg>
+                                    <GraduationCap size={18} className="text-primary-300" />
                                 </div>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value={formData.email}
+                                <select
+                                    id="status"
+                                    name="status"
+                                    value={formData.status}
                                     onChange={handleChange}
-                                    className={`w-full pl-12 pr-4 py-3 border ${
-                                        errors.email
-                                            ? "border-red-500"
-                                            : "border-gray-300"
-                                    } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200`}
-                                    placeholder="contoh@email.com"
+                                    className={`w-full pl-11 pr-4 py-3.5 border ${
+                                        errors.status
+                                            ? "border-red-400 bg-red-50/30"
+                                            : "border-primary-200 bg-primary-50/30"
+                                    } rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-primary-900 appearance-none cursor-pointer`}
                                     disabled={loading}
-                                />
-                            </div>
-                            {getFieldError("email") && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {getFieldError("email")}
-                                </p>
-                            )}
-                            {/* Email Warning Box */}
-                            <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                                <div className="flex items-start gap-2">
-                                    <svg
-                                        className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                                        />
+                                >
+                                    <option value="">Pilih Status</option>
+                                    <option value="mahasiswa">Mahasiswa</option>
+                                    <option value="dosen">Dosen</option>
+                                    <option value="asdos">Asisten Dosen</option>
+                                    <option value="staff">Staff</option>
+                                </select>
+                                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                    <svg className="w-4 h-4 text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                     </svg>
-                                    <div>
-                                        <p className="text-amber-800 text-sm font-medium">
-                                            Pastikan email Anda benar!
-                                        </p>
-                                        <p className="text-amber-700 text-xs mt-1">
-                                            Email ini akan digunakan untuk ubah
-                                            password ketika lupa dan verifikasi
-                                            saat mengubah data akun seperti
-                                            email dan nomor telepon. Pastikan
-                                            Anda memiliki akses ke email ini.
-                                        </p>
-                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        {/* No Telepon Field */}
-                        <div>
-                            <label
-                                htmlFor="no_telepon"
-                                className="block text-sm font-medium text-gray-700 mb-2"
-                            >
-                                No Telepon
-                            </label>
-                            <input
-                                type="text"
-                                id="no_telepon"
-                                name="no_telepon"
-                                value={formData.no_telepon}
-                                onChange={handleChange}
-                                className={`w-full px-4 py-3 border ${
-                                    errors.no_telepon
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200`}
-                                placeholder="08xxxxxxxxxx"
-                                disabled={loading}
-                            />
-                            {getFieldError("no_telepon") && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {getFieldError("no_telepon")}
-                                </p>
-                            )}
-                        </div>
-
-                        <div>
-                            <label
-                                htmlFor="status"
-                                className="block text-sm font-medium text-gray-700 mb-2"
-                            >
-                                Status
-                            </label>
-                            <select
-                                id="status"
-                                name="status"
-                                value={formData.status}
-                                onChange={handleChange}
-                                className={`w-full px-4 py-3 border ${
-                                    errors.status
-                                        ? "border-red-500"
-                                        : "border-gray-300"
-                                } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200 bg-white`}
-                                disabled={loading}
-                            >
-                                <option value="">Pilih Status</option>
-                                <option value="dosen">Dosen</option>
-                                <option value="asdos">Asdos</option>
-                                <option value="staff">Staff</option>
-                                <option value="mahasiswa">Mahasiswa</option>
-                            </select>
                             {getFieldError("status") && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {getFieldError("status")}
-                                </p>
+                                <p className="text-red-500 text-xs mt-1.5 font-medium">{getFieldError("status")}</p>
                             )}
                         </div>
 
+                        {/* Password */}
                         <div>
-                            <label
-                                htmlFor="password"
-                                className="block text-sm font-medium text-gray-700 mb-2"
-                            >
+                            <label htmlFor="password" className="block text-sm font-semibold text-primary-800 mb-2">
                                 Password
                             </label>
                             <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                    <Lock size={18} className="text-primary-300" />
+                                </div>
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     id="password"
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border ${
+                                    className={`w-full pl-11 pr-12 py-3.5 border ${
                                         errors.password
-                                            ? "border-red-500"
-                                            : "border-gray-300"
-                                    } rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition duration-200`}
+                                            ? "border-red-400 bg-red-50/30"
+                                            : "border-primary-200 bg-primary-50/30"
+                                    } rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all text-primary-900 placeholder-primary-300`}
                                     placeholder="Minimal 6 karakter"
                                     disabled={loading}
                                 />
                                 <button
                                     type="button"
-                                    onClick={() =>
-                                        setShowPassword(!showPassword)
-                                    }
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-primary-400 hover:text-primary-600 transition-colors"
                                 >
-                                    {showPassword ? (
-                                        <svg
-                                            className="w-5 h-5"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
-                                            />
-                                        </svg>
-                                    ) : (
-                                        <svg
-                                            className="w-5 h-5"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                            />
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                strokeWidth={2}
-                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                            />
-                                        </svg>
-                                    )}
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
                             {getFieldError("password") && (
-                                <p className="text-red-500 text-xs mt-1">
-                                    {getFieldError("password")}
-                                </p>
+                                <p className="text-red-500 text-xs mt-1.5 font-medium">{getFieldError("password")}</p>
                             )}
                         </div>
 
-                        <button
+                        {/* Submit */}
+                        <motion.button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-gradient-to-r from-primary-700 to-primary-800 hover:from-primary-800 hover:to-primary-900 text-white font-semibold py-3 rounded-lg transition duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                            whileHover={{ scale: loading ? 1 : 1.02 }}
+                            whileTap={{ scale: loading ? 1 : 0.98 }}
+                            className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-primary-700 to-primary-900 hover:from-primary-800 hover:to-primary-950 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-primary-800/30 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                         >
-                            {loading ? "Loading..." : "Daftar"}
-                        </button>
+                            {loading ? (
+                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                                <>
+                                    Daftar Sekarang
+                                    <ArrowRight size={18} />
+                                </>
+                            )}
+                        </motion.button>
                     </form>
 
-                    <div className="mt-6 text-center text-sm text-gray-600">
-                        Sudah punya akun?{" "}
-                        <Link
-                            to="/login"
-                            className="text-primary-700 hover:text-primary-800 font-semibold"
-                        >
-                            Login disini
-                        </Link>
+                    {/* Links */}
+                    <div className="mt-8 pt-6 border-t border-primary-100">
+                        <p className="text-center text-sm text-primary-500">
+                            Sudah punya akun?{" "}
+                            <Link to="/login" className="text-primary-700 hover:text-primary-900 font-bold transition-colors">
+                                Login disini
+                            </Link>
+                        </p>
                     </div>
                 </div>
-            </div>
+            </motion.div>
+
+            <style>{`
+                @keyframes gradientShift {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+            `}</style>
         </div>
     );
 };

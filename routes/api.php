@@ -10,10 +10,13 @@ use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\UserManagementController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\AdminAssistanceController;
+use App\Http\Controllers\Api\PublicStatsController;
 
 /**
  * Public routes - No authentication required
  */
+Route::get('/public/stats', [PublicStatsController::class, 'getStats']);
+
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login/user', [AuthController::class, 'loginUser']);

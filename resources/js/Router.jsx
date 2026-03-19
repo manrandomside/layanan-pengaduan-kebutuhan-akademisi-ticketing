@@ -2,6 +2,9 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./contexts/AuthContext";
 
+// Landing Page
+import LandingPage from "./pages/LandingPage";
+
 // Auth Pages
 import LoginUser from "./pages/auth/LoginUser";
 import LoginAdmin from "./pages/auth/LoginAdmin";
@@ -89,8 +92,8 @@ const Router = () => {
     return (
         <BrowserRouter>
             <Routes>
-                {/* Default redirect */}
-                <Route path="/" element={<Navigate to="/login" replace />} />
+                {/* Landing Page */}
+                <Route path="/" element={<LandingPage />} />
 
                 {/* Public Routes - Auth */}
                 <Route

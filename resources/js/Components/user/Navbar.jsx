@@ -117,7 +117,7 @@ const Navbar = () => {
 
     const handleLogout = async () => {
         await logout();
-        navigate("/login");
+        window.location.href = "/";
     };
 
     const handleNotificationClick = async (notificationId) => {

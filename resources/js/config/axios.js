@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Base URL dari environment variable, fallback ke localhost untuk development
 const axiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000/api",
+    baseURL: import.meta.env.VITE_API_URL || "/api",
     withCredentials: true,
     headers: {
         "Content-Type": "application/json",
@@ -31,20 +31,22 @@ axiosInstance.interceptors.response.use(
     },
     (error) => {
         if (error.response) {
-            // Handle 401 Unauthorized
-            if (error.response.status === 401) {
+            const isLogout = error.config?.url?.includes("/logout");
+
+            // Handle 401 Unauthorized (skip for logout requests)
+            if (error.response.status === 401 && !isLogout) {
                 localStorage.removeItem("auth_token");
                 localStorage.removeItem("user_data");
-                window.location.href = "/login";
+                window.location.href = "/";
             }
 
             // Handle 403 Forbidden (akun dinonaktifkan)
-            if (error.response.status === 403) {
+            if (error.response.status === 403 && !isLogout) {
                 const message = error.response.data.message || "Akses ditolak";
                 alert(message);
                 localStorage.removeItem("auth_token");
                 localStorage.removeItem("user_data");
-                window.location.href = "/login";
+                window.location.href = "/";
             }
         }
         return Promise.reject(error);

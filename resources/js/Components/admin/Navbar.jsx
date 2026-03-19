@@ -109,7 +109,7 @@ const Navbar = () => {
 
     const handleLogout = async () => {
         await logout();
-        navigate("/admin/login");
+        window.location.href = "/";
     };
 
     const handleNotificationClick = async (notification) => {
